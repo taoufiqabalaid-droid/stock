@@ -5,10 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GestionStock Pro</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family+Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script>
 tailwind.config={theme:{extend:{colors:{sb:'#0d1117',mn:'#131920',cd:'#1a2232',cdH:'#212d40',bd:'#2a3444',ac:'#f0b429',acD:'#c99a1f',sc:'#22c55e',dg:'#ef4444',wn:'#f59e0b',tp:'#f1f5f9',ts:'#8b949e'},fontFamily:{h:['Space Grotesk','sans-serif']}}}}
 </script>
@@ -154,16 +153,6 @@ select.form-input{appearance:none;cursor:pointer}
     <!-- Tableau de bord -->
     <div class="page active" id="page-dashboard">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8" id="statCards"></div>
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
-        <div class="chart-wrap lg:col-span-2">
-          <h3 style="font-size:.95rem;font-weight:600;margin-bottom:16px;color:#8b949e">MOUVEMENTS DE STOCK (30 JOURS)</h3>
-          <canvas id="dashChart" height="200"></canvas>
-        </div>
-        <div class="chart-wrap">
-          <h3 style="font-size:.95rem;font-weight:600;margin-bottom:16px;color:#8b949e">REPARTITION PAR CATEGORIE</h3>
-          <canvas id="dashDoughnut" height="200"></canvas>
-        </div>
-      </div>
       <div class="chart-wrap">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
           <h3 style="font-size:.95rem;font-weight:600;color:#8b949e">ACTIVITE RECENTE</h3>
@@ -299,15 +288,11 @@ select.form-input{appearance:none;cursor:pointer}
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
-/* =====================================================
-   COUCHE DE DONNEES - LocalStorage
-   ===================================================== */
 const Store = {
   get(k) { try { return JSON.parse(localStorage.getItem('gs_' + k)) || []; } catch { return []; } },
   set(k, v) { localStorage.setItem('gs_' + k, JSON.stringify(v)); },
 };
 
-/* Données initiales — entrées et sorties VIDES */
 const SEED = {
   categories: [
     { id:1, name:'Alimentation', desc:'Produits alimentaires de base', color:'#f0b429' },
@@ -342,27 +327,15 @@ const SEED = {
   exits: [],
 };
 
-/* =====================================================
-   INITIALISATION — Versionnage pour forcer le re-seed
-   Le numero de version change → toutes les données sont
-   rechargees depuis SEED (y compris entrées/sorties vides)
-   ===================================================== */
-const APP_VERSION = 3;
-
+const APP_VERSION = 4;
 function initData() {
   if (localStorage.getItem('gs_version') !== String(APP_VERSION)) {
-    /* Version différente ou première visite → on réécrit tout */
-    ['categories','suppliers','products','entries','exits'].forEach(k => {
-      Store.set(k, SEED[k]);
-    });
+    ['categories','suppliers','products','entries','exits'].forEach(k => { Store.set(k, SEED[k]); });
     localStorage.setItem('gs_version', String(APP_VERSION));
   }
 }
 initData();
 
-/* =====================================================
-   UTILITAIRES
-   ===================================================== */
 function getCat(id) { return Store.get('categories').find(c => c.id === id) || { name:'-', color:'#666' }; }
 function getSup(id) { return Store.get('suppliers').find(s => s.id === id) || { name:'-' }; }
 function getProd(id) { return Store.get('products').find(p => p.id === id) || { name:'-' }; }
@@ -377,9 +350,6 @@ function statusBadge(st) {
 }
 function today() { return new Date().toISOString().split('T')[0]; }
 
-/* =====================================================
-   TOAST
-   ===================================================== */
 function toast(msg, type = 'success') {
   const c = document.getElementById('toastContainer');
   const icons = { success:'fa-circle-check', error:'fa-circle-xmark', info:'fa-circle-info' };
@@ -390,9 +360,6 @@ function toast(msg, type = 'success') {
   setTimeout(() => { el.style.opacity='0'; el.style.transform='translateX(60px)'; el.style.transition='all .3s ease'; setTimeout(()=>el.remove(),300); }, 3000);
 }
 
-/* =====================================================
-   MODAL
-   ===================================================== */
 function openModal(title, bodyHTML, footerHTML) {
   document.getElementById('modalTitle').textContent = title;
   document.getElementById('modalBody').innerHTML = bodyHTML;
@@ -402,37 +369,23 @@ function openModal(title, bodyHTML, footerHTML) {
 function closeModal() { document.getElementById('modal').classList.remove('show'); }
 document.getElementById('modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
 
-/* =====================================================
-   SELECTION MULTIPLE
-   ===================================================== */
 let selectedIds = new Set();
-
-function toggleSelect(id) {
-  if (selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id);
-  updateSelectionUI();
-}
-
+function toggleSelect(id) { if (selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id); updateSelectionUI(); }
 function toggleSelectAll() {
   const vis = getFilteredProducts();
   const allSel = vis.length > 0 && vis.every(p => selectedIds.has(p.id));
   if (allSel) vis.forEach(p => selectedIds.delete(p.id)); else vis.forEach(p => selectedIds.add(p.id));
   updateSelectionUI(); renderProducts();
 }
-
 function clearSelection() { selectedIds.clear(); updateSelectionUI(); renderProducts(); }
-
 function updateSelectionUI() {
-  const bar = document.getElementById('bulkBar');
-  const count = document.getElementById('bulkCount');
-  const label = document.getElementById('selectCount');
-  const cb = document.getElementById('selectAllCb');
-  const vis = getFilteredProducts();
-  const allSel = vis.length > 0 && vis.every(p => selectedIds.has(p.id));
+  const bar = document.getElementById('bulkBar'); const count = document.getElementById('bulkCount');
+  const label = document.getElementById('selectCount'); const cb = document.getElementById('selectAllCb');
+  const vis = getFilteredProducts(); const allSel = vis.length > 0 && vis.every(p => selectedIds.has(p.id));
   if (selectedIds.size > 0) { bar.classList.add('show'); count.textContent = selectedIds.size; label.textContent = selectedIds.size + ' selectionne(s)'; }
   else { bar.classList.remove('show'); label.textContent = 'Tout selectionner'; }
   cb.className = 'custom-cb' + (allSel ? ' checked' : '');
 }
-
 function getFilteredProducts() {
   const prods = Store.get('products');
   const q = (document.getElementById('productSearch')?.value || '').toLowerCase();
@@ -440,9 +393,6 @@ function getFilteredProducts() {
   return prods.filter(p => p.name.toLowerCase().includes(q) && (!catF || p.catId === +catF));
 }
 
-/* =====================================================
-   SUPPRESSION MULTIPLE
-   ===================================================== */
 function bulkDelete() {
   const n = selectedIds.size; if (!n) return;
   openModal('Confirmer la suppression multiple',
@@ -454,9 +404,7 @@ function confirmBulkDelete() {
   const n = selectedIds.size; selectedIds.clear(); closeModal(); toast(`${n} produit(s) supprime(s)`, 'info'); updateSelectionUI(); renderProducts();
 }
 
-/* =====================================================
-   IMPORT / EXPORT EXCEL
-   ===================================================== */
+/* Import / Export Excel */
 function downloadTemplate() {
   const cats = Store.get('categories'); const sups = Store.get('suppliers');
   const wsData = [['Nom du produit','Categorie','Quantite','Prix (DH)','Stock minimum','Fournisseur'],['Huile d\'olive 1L',cats[0]?.name||'Alimentation',100,85,20,sups[0]?.name||'Fournisseur 1']];
@@ -547,7 +495,7 @@ function showImportPreview(errors) {
   const un = pendingImportData.filter(p => !p._catOk || !p._supOk);
   if (un.length) info += ` ${un.length} correspondance(s) imprecise(s) — affectation par defaut.`;
   document.getElementById('previewInfo').textContent = info;
-  const btn = document.getElementById('confirmImportBtn'); btn.style.display = 'inline-flex';
+  document.getElementById('confirmImportBtn').style.display = 'inline-flex';
   document.getElementById('importCount').textContent = `(${pendingImportData.length})`;
 }
 
@@ -587,15 +535,9 @@ function exportToExcel() {
   toast(`${prods.length} produit(s) exporte(s)`);
 }
 
-/* =====================================================
-   ROUTEUR
-   ===================================================== */
-const PAGE_TITLES = {
-  dashboard:'Tableau de bord', products:'Produits', entries:'Entrees de stock',
-  exits:'Sorties de stock', suppliers:'Fournisseurs', categories:'Categories', inventory:'Inventaire'
-};
+/* Routeur */
+const PAGE_TITLES = { dashboard:'Tableau de bord', products:'Produits', entries:'Entrees de stock', exits:'Sorties de stock', suppliers:'Fournisseurs', categories:'Categories', inventory:'Inventaire' };
 let currentPage = 'dashboard';
-let chartInstances = {};
 
 function navigate(page) {
   currentPage = page;
@@ -609,7 +551,6 @@ function navigate(page) {
 }
 
 function renderPage(page) {
-  Object.keys(chartInstances).forEach(k => { chartInstances[k].destroy(); delete chartInstances[k]; });
   switch(page) {
     case 'dashboard': renderDashboard(); break;
     case 'products': renderProducts(); break;
@@ -631,9 +572,7 @@ function handleGlobalSearch(q) {
   if (currentPage === 'products') { document.getElementById('productSearch').value = q; renderProducts(); }
 }
 
-/* =====================================================
-   DASHBOARD
-   ===================================================== */
+/* Dashboard */
 function renderDashboard() {
   const prods = Store.get('products');
   const tv = prods.reduce((s,p)=>s+p.qty*p.price,0);
@@ -647,24 +586,11 @@ function renderDashboard() {
   ];
   document.getElementById('statCards').innerHTML = cards.map(c => `<div class="stat-card"><div class="icon-wrap" style="background:${c.bg};color:${c.color}"><i class="fa-solid ${c.icon}"></i></div><div class="label">${c.label}</div><div class="value" style="animation:countUp .4s ease">${c.value}</div><div class="trend" style="color:${c.up?'#22c55e':c.color}"><i class="fa-solid ${c.up?'fa-arrow-trend-up':'fa-info-circle'}" style="font-size:.65rem"></i> ${c.trend}</div></div>`).join('');
 
-  /* Graphique linéaire : 30 derniers jours */
-  const labels=[],entryData=[],exitData=[];
-  for(let d=29;d>=0;d--){const date=new Date();date.setDate(date.getDate()-d);const ds=date.toISOString().split('T')[0];labels.push(date.getDate()+'/'+(date.getMonth()+1));entryData.push(Store.get('entries').filter(e=>e.date===ds).reduce((s,e)=>s+e.qty,0));exitData.push(Store.get('exits').filter(e=>e.date===ds).reduce((s,e)=>s+e.qty,0));}
-  chartInstances.dash = new Chart(document.getElementById('dashChart').getContext('2d'),{type:'line',data:{labels,datasets:[{label:'Entrees',data:entryData,borderColor:'#22c55e',backgroundColor:'rgba(34,197,94,.08)',fill:true,tension:.4,pointRadius:0,borderWidth:2},{label:'Sorties',data:exitData,borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,.08)',fill:true,tension:.4,pointRadius:0,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b949e',font:{family:'Space Grotesk',size:12}}}},scales:{x:{ticks:{color:'#4a5568',font:{size:10},maxTicksLimit:10},grid:{color:'#1e2a3a'}},y:{ticks:{color:'#4a5568',font:{size:10}},grid:{color:'#1e2a3a'},beginAtZero:true}},interaction:{intersect:false,mode:'index'}}});
-
-  /* Doughnut par catégorie */
-  const cats=Store.get('categories');
-  const catData=cats.map(c=>prods.filter(p=>p.catId===c.id).reduce((s,p)=>s+p.qty,0));
-  chartInstances.doughnut = new Chart(document.getElementById('dashDoughnut').getContext('2d'),{type:'doughnut',data:{labels:cats.map(c=>c.name),datasets:[{data:catData,backgroundColor:cats.map(c=>c.color),borderWidth:0,hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'bottom',labels:{color:'#8b949e',font:{family:'Space Grotesk',size:11},padding:12,usePointStyle:true,pointStyleWidth:8}}}}});
-
-  /* Activité récente */
   const allMoves=[...Store.get('entries').slice(-5).map(e=>({...e,type:'entry'})),...Store.get('exits').slice(-5).map(e=>({...e,type:'exit'}))].sort((a,b)=>b.id-a.id).slice(0,8);
   document.getElementById('recentActivity').innerHTML = allMoves.length ? `<table class="data-table"><thead><tr><th>Type</th><th>Produit</th><th>Quantite</th><th>Date</th></tr></thead><tbody>${allMoves.map(m=>{const p=getProd(m.prodId);return `<tr><td>${m.type==='entry'?'<span class="badge badge-green"><i class="fa-solid fa-arrow-down"></i> Entree</span>':'<span class="badge badge-red"><i class="fa-solid fa-arrow-up"></i> Sortie</span>'}</td><td>${p.name}</td><td style="font-weight:600">${m.type==='entry'?'+':'-'}${m.qty}</td><td style="color:#8b949e">${m.date}</td></tr>`;}).join('')}</tbody></table>` : '<p style="color:#8b949e;padding:40px 20px;text-align:center"><i class="fa-solid fa-inbox" style="font-size:1.5rem;display:block;margin-bottom:8px;opacity:.4"></i>Aucune activite enregistree pour le moment.<br><span style="font-size:.78rem">Les entrees et sorties apparaitront ici une fois ajoutees.</span></p>';
 }
 
-/* =====================================================
-   PRODUITS
-   ===================================================== */
+/* Produits */
 function renderProducts() {
   const prods = Store.get('products'); const cats = Store.get('categories');
   const q = (document.getElementById('productSearch')?.value||'').toLowerCase();
@@ -701,9 +627,7 @@ function deleteProduct(id) {
   openModal('Confirmer la suppression',`<div style="text-align:center;padding:10px 0"><i class="fa-solid fa-triangle-exclamation" style="font-size:2.5rem;color:#ef4444;margin-bottom:12px"></i><p style="color:#f1f5f9;font-size:1.05rem;font-weight:600;margin-bottom:6px">Supprimer ce produit ?</p><p style="color:#8b949e;font-size:.85rem">${p.name}</p></div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-danger" onclick="Store.set('products',Store.get('products').filter(p=>p.id!==${id}));closeModal();toast('Produit supprime','info');renderProducts();"><i class="fa-solid fa-trash"></i> Supprimer</button>`);
 }
 
-/* =====================================================
-   ENTREES
-   ===================================================== */
+/* Entrees */
 function renderEntries() {
   const prods=Store.get('products');
   document.getElementById('entryProduct').innerHTML=prods.map(p=>`<option value="${p.id}">${p.name} (stock: ${p.qty})</option>`).join('');
@@ -719,9 +643,7 @@ function addEntry() {
   document.getElementById('entryQty').value='';document.getElementById('entryNote').value='';toast(`Entree de ${qty} unites enregistree`);renderEntries();
 }
 
-/* =====================================================
-   SORTIES
-   ===================================================== */
+/* Sorties */
 function renderExits() {
   const prods=Store.get('products');
   document.getElementById('exitProduct').innerHTML=prods.map(p=>`<option value="${p.id}">${p.name} (stock: ${p.qty})</option>`).join('');
@@ -739,9 +661,7 @@ function addExit() {
   document.getElementById('exitQty').value='';document.getElementById('exitNote').value='';toast(`Sortie de ${qty} unites enregistree`);renderExits();
 }
 
-/* =====================================================
-   FOURNISSEURS
-   ===================================================== */
+/* Fournisseurs */
 function renderSuppliers() {
   const sups=Store.get('suppliers');const prods=Store.get('products');
   const q=(document.getElementById('supplierSearch')?.value||'').toLowerCase();
@@ -763,9 +683,7 @@ function deleteSupplier(id) {
   openModal('Confirmer','<p style="color:#8b949e">Supprimer ce fournisseur ?</p>',`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-danger" onclick="Store.set('suppliers',Store.get('suppliers').filter(s=>s.id!==${id}));closeModal();toast('Fournisseur supprime','info');renderSuppliers();">Supprimer</button>`);
 }
 
-/* =====================================================
-   CATEGORIES
-   ===================================================== */
+/* Categories */
 function renderCategories() {
   const cats=Store.get('categories');const prods=Store.get('products');
   document.getElementById('categoriesGrid').innerHTML=cats.map(c=>{const nb=prods.filter(p=>p.catId===c.id).length;const val=prods.filter(p=>p.catId===c.id).reduce((s,p)=>s+p.qty*p.price,0);return `<div class="stat-card" style="border-left:3px solid ${c.color}"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><h4 style="font-weight:700;font-size:1.05rem">${c.name}</h4><div style="display:flex;gap:6px"><button class="btn btn-sm btn-secondary btn-icon" onclick="openCategoryModal(${c.id})"><i class="fa-solid fa-pen-to-square"></i></button><button class="btn btn-sm btn-danger btn-icon" onclick="deleteCategory(${c.id})"><i class="fa-solid fa-trash"></i></button></div></div><p style="font-size:.82rem;color:#8b949e;margin-bottom:10px">${c.desc}</p><div style="display:flex;gap:16px;font-size:.82rem"><span><strong style="color:#f1f5f9">${nb}</strong> <span style="color:#8b949e">produit${nb>1?'s':''}</span></span><span><strong style="color:#f1f5f9">${fmtD(val)}</strong></span></div></div>`;}).join('');
@@ -787,9 +705,7 @@ function deleteCategory(id) {
   openModal('Confirmer','<p style="color:#8b949e">Supprimer cette categorie ?</p>',`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-danger" onclick="Store.set('categories',Store.get('categories').filter(c=>c.id!==${id}));closeModal();toast('Categorie supprimee','info');renderCategories();">Supprimer</button>`);
 }
 
-/* =====================================================
-   INVENTAIRE
-   ===================================================== */
+/* Inventaire */
 let invFilter = '';
 function filterInventory(f) { invFilter = f; renderInventory(); }
 function renderInventory() {
@@ -798,9 +714,6 @@ function renderInventory() {
   document.getElementById('inventoryGrid').innerHTML=filtered.length?filtered.map(p=>{const st=stockStatus(p.qty,p.min);const cat=getCat(p.catId);const maxQ=Math.max(p.min*3,p.qty,1);const pct=Math.min(100,(p.qty/maxQ)*100);const bc=st==='out'?'#ef4444':st==='low'?'#f59e0b':'#22c55e';return `<div class="stat-card"><div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:10px"><div><div style="font-weight:700;font-size:.95rem;margin-bottom:2px">${p.name}</div><div style="font-size:.78rem;color:${cat.color}">${cat.name}</div></div>${statusBadge(st)}</div><div style="display:flex;align-items:baseline;gap:6px;margin-bottom:6px"><span style="font-size:1.5rem;font-weight:700">${fmt(p.qty)}</span><span style="font-size:.78rem;color:#8b949e">/ min ${p.min}</span></div><div class="stock-bar"><div class="stock-bar-fill" style="width:${pct}%;background:${bc}"></div></div><div style="display:flex;justify-content:space-between;margin-top:10px;font-size:.78rem;color:#8b949e"><span>Prix: ${fmtD(p.price)}</span><span>Valeur: ${fmtD(p.qty*p.price)}</span></div></div>`;}).join(''):'<p style="color:#8b949e;text-align:center;padding:40px;grid-column:1/-1">Aucun produit dans cette categorie</p>';
 }
 
-/* =====================================================
-   DEMARRAGE
-   ===================================================== */
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 navigate('dashboard');
 </script>
