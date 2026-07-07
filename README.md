@@ -1,2 +1,0 @@
-# stock
-gestion de stock
