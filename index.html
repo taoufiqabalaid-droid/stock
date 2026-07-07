@@ -94,25 +94,17 @@ select.form-input{appearance:none;cursor:pointer}
 .search-box{position:relative}
 .search-box i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#4a5568;font-size:.85rem}
 .search-box input{padding-left:40px}
-
-/* Zone de drop Excel */
 .drop-zone{border:2px dashed #2a3444;border-radius:12px;padding:40px 20px;text-align:center;transition:all .25s ease;cursor:pointer;position:relative}
 .drop-zone:hover,.drop-zone.drag-over{border-color:#f0b429;background:rgba(240,180,41,.04)}
 .drop-zone i{font-size:2.5rem;color:#2a3444;margin-bottom:12px;transition:color .25s ease}
 .drop-zone:hover i,.drop-zone.drag-over i{color:#f0b429}
 .drop-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer}
-
-/* Checkbox personnalisé */
 .custom-cb{width:18px;height:18px;border:2px solid #2a3444;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s ease;flex-shrink:0;background:#131920}
 .custom-cb:hover{border-color:#f0b429}
 .custom-cb.checked{background:#f0b429;border-color:#f0b429}
 .custom-cb.checked::after{content:'\f00c';font-family:'Font Awesome 6 Free';font-weight:900;font-size:.6rem;color:#0d1117}
-
-/* Barre d'actions flottante */
 .bulk-bar{position:sticky;bottom:16px;background:#1a2232;border:1px solid #f0b42944;border-radius:12px;padding:12px 20px;display:none;align-items:center;justify-content:space-between;z-index:20;backdrop-filter:blur(12px);box-shadow:0 8px 32px rgba(0,0,0,.4);animation:slideUp .25s ease}
 .bulk-bar.show{display:flex}
-
-/* Aperçu tableau import */
 .preview-table{max-height:260px;overflow-y:auto;border:1px solid #2a3444;border-radius:8px;margin-top:12px}
 .preview-table table{width:100%;border-collapse:collapse;font-size:.78rem}
 .preview-table th{padding:8px 10px;background:#131920;color:#8b949e;text-align:left;position:sticky;top:0;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
@@ -122,7 +114,6 @@ select.form-input{appearance:none;cursor:pointer}
 </head>
 <body>
 
-<!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
     <h2><i class="fa-solid fa-warehouse" style="margin-right:6px"></i> GestionStock</h2>
@@ -136,7 +127,6 @@ select.form-input{appearance:none;cursor:pointer}
     <li data-page="suppliers"><i class="fa-solid fa-truck-field"></i> Fournisseurs</li>
     <li data-page="categories"><i class="fa-solid fa-tags"></i> Categories</li>
     <li data-page="inventory"><i class="fa-solid fa-clipboard-list"></i> Inventaire</li>
-    <li data-page="statistics"><i class="fa-solid fa-chart-line"></i> Statistiques</li>
   </ul>
   <div class="sidebar-footer">
     <i class="fa-solid fa-circle" style="color:#22c55e;font-size:6px;vertical-align:middle;margin-right:4px"></i>
@@ -144,7 +134,6 @@ select.form-input{appearance:none;cursor:pointer}
   </div>
 </aside>
 
-<!-- Contenu principal -->
 <div class="main" id="main">
   <header class="main-header">
     <div style="display:flex;align-items:center;gap:12px">
@@ -162,7 +151,7 @@ select.form-input{appearance:none;cursor:pointer}
   </header>
 
   <div class="main-content">
-    <!-- PAGE: Tableau de bord -->
+    <!-- Tableau de bord -->
     <div class="page active" id="page-dashboard">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8" id="statCards"></div>
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
@@ -183,9 +172,8 @@ select.form-input{appearance:none;cursor:pointer}
       </div>
     </div>
 
-    <!-- PAGE: Produits -->
+    <!-- Produits -->
     <div class="page" id="page-products">
-      <!-- Barre d'outils -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
           <div class="search-box" style="width:220px">
@@ -205,8 +193,6 @@ select.form-input{appearance:none;cursor:pointer}
           <button class="btn btn-secondary" onclick="downloadTemplate()"><i class="fa-solid fa-file-arrow-down"></i> Modele</button>
         </div>
       </div>
-
-      <!-- Tableau des produits -->
       <div class="chart-wrap" style="padding:0;overflow-x:auto">
         <table class="data-table" id="productsTable">
           <thead><tr>
@@ -216,8 +202,6 @@ select.form-input{appearance:none;cursor:pointer}
           <tbody></tbody>
         </table>
       </div>
-
-      <!-- Barre de suppression multiple -->
       <div class="bulk-bar" id="bulkBar">
         <span style="font-size:.9rem"><strong id="bulkCount">0</strong> produit(s) selectionne(s)</span>
         <div style="display:flex;gap:8px">
@@ -227,7 +211,7 @@ select.form-input{appearance:none;cursor:pointer}
       </div>
     </div>
 
-    <!-- PAGE: Entrees -->
+    <!-- Entrees -->
     <div class="page" id="page-entries">
       <h3 style="font-size:1rem;font-weight:600;color:#8b949e;margin-bottom:20px">Enregistrer une entree de stock</h3>
       <div class="chart-wrap mb-6">
@@ -246,7 +230,7 @@ select.form-input{appearance:none;cursor:pointer}
       </div>
     </div>
 
-    <!-- PAGE: Sorties -->
+    <!-- Sorties -->
     <div class="page" id="page-exits">
       <h3 style="font-size:1rem;font-weight:600;color:#8b949e;margin-bottom:20px">Enregistrer une sortie de stock</h3>
       <div class="chart-wrap mb-6">
@@ -265,7 +249,7 @@ select.form-input{appearance:none;cursor:pointer}
       </div>
     </div>
 
-    <!-- PAGE: Fournisseurs -->
+    <!-- Fournisseurs -->
     <div class="page" id="page-suppliers">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
         <div class="search-box" style="width:240px"><i class="fa-solid fa-magnifying-glass"></i><input type="text" class="form-input" placeholder="Chercher un fournisseur..." id="supplierSearch" oninput="renderSuppliers()"></div>
@@ -276,7 +260,7 @@ select.form-input{appearance:none;cursor:pointer}
       </div>
     </div>
 
-    <!-- PAGE: Categories -->
+    <!-- Categories -->
     <div class="page" id="page-categories">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
         <h3 style="font-size:1rem;font-weight:600;color:#8b949e">Gestion des categories</h3>
@@ -285,7 +269,7 @@ select.form-input{appearance:none;cursor:pointer}
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="categoriesGrid"></div>
     </div>
 
-    <!-- PAGE: Inventaire -->
+    <!-- Inventaire -->
     <div class="page" id="page-inventory">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
         <h3 style="font-size:1rem;font-weight:600;color:#8b949e">Etat des stocks</h3>
@@ -298,22 +282,9 @@ select.form-input{appearance:none;cursor:pointer}
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="inventoryGrid"></div>
     </div>
-
-    <!-- PAGE: Statistiques -->
-    <div class="page" id="page-statistics">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
-        <div class="chart-wrap"><h3 style="font-size:.95rem;font-weight:600;margin-bottom:16px;color:#8b949e">VALEUR DU STOCK PAR CATEGORIE</h3><canvas id="statBarChart" height="220"></canvas></div>
-        <div class="chart-wrap"><h3 style="font-size:.95rem;font-weight:600;margin-bottom:16px;color:#8b949e">TOP 5 PRODUITS EN VALEUR</h3><canvas id="statHBarChart" height="220"></canvas></div>
-      </div>
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <div class="chart-wrap"><h3 style="font-size:.95rem;font-weight:600;margin-bottom:16px;color:#8b949e">ENTREES VS SORTIES</h3><canvas id="statLineChart" height="220"></canvas></div>
-        <div class="chart-wrap"><h3 style="font-size:.95rem;font-weight:600;margin-bottom:16px;color:#8b949e">DISTRIBUTION DES PRIX</h3><canvas id="statScatterChart" height="220"></canvas></div>
-      </div>
-    </div>
   </div>
 </div>
 
-<!-- Modal -->
 <div class="modal-overlay" id="modal">
   <div class="modal-card">
     <div class="modal-header">
@@ -325,7 +296,6 @@ select.form-input{appearance:none;cursor:pointer}
   </div>
 </div>
 
-<!-- Toasts -->
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
@@ -372,28 +342,36 @@ const SEED = {
   exits: [],
 };
 
+/* Générer l'historique fictif sur 30 jours */
 (function seedHistory() {
   const prods = SEED.products;
   for (let d = 30; d >= 1; d--) {
     const date = new Date(); date.setDate(date.getDate() - d);
     const ds = date.toISOString().split('T')[0];
-    const nE = 1 + Math.floor(Math.random() * 3);
-    for (let i = 0; i < nE; i++) {
+    for (let i = 0, n = 1 + Math.floor(Math.random() * 3); i < n; i++) {
       const p = prods[Math.floor(Math.random() * prods.length)];
       SEED.entries.push({ id: SEED.entries.length + 1, prodId: p.id, qty: 10 + Math.floor(Math.random() * 50), date: ds, note: '' });
     }
-    const nX = 1 + Math.floor(Math.random() * 2);
-    for (let i = 0; i < nX; i++) {
+    for (let i = 0, n = 1 + Math.floor(Math.random() * 2); i < n; i++) {
       const p = prods[Math.floor(Math.random() * prods.length)];
       SEED.exits.push({ id: SEED.exits.length + 1, prodId: p.id, qty: 5 + Math.floor(Math.random() * 30), date: ds, note: '' });
     }
   }
 })();
 
+/* =====================================================
+   INITIALISATION - Le flag empêche le re-semage
+   ===================================================== */
 function initData() {
-  ['categories','suppliers','products','entries','exits'].forEach(k => {
-    if (Store.get(k).length === 0) Store.set(k, SEED[k]);
-  });
+  /* Le flag gs_initialized est posé UNE SEULE FOIS au premier lancement.
+     Après ça, même si un tableau est vide (après suppression totale),
+     les données NE seront JAMAIS réinjectées. */
+  if (localStorage.getItem('gs_initialized') !== 'true') {
+    ['categories','suppliers','products','entries','exits'].forEach(k => {
+      Store.set(k, SEED[k]);
+    });
+    localStorage.setItem('gs_initialized', 'true');
+  }
 }
 initData();
 
@@ -422,9 +400,9 @@ function toast(msg, type = 'success') {
   const icons = { success:'fa-circle-check', error:'fa-circle-xmark', info:'fa-circle-info' };
   const el = document.createElement('div');
   el.className = `toast toast-${type}`;
-  el.innerHTML = `<i class="fa-solid ${icons[type] || icons.info}"></i>${msg}<div class="progress"></div>`;
+  el.innerHTML = `<i class="fa-solid ${icons[type]||icons.info}"></i>${msg}<div class="progress"></div>`;
   c.appendChild(el);
-  setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateX(60px)'; el.style.transition = 'all .3s ease'; setTimeout(() => el.remove(), 300); }, 3000);
+  setTimeout(() => { el.style.opacity='0'; el.style.transform='translateX(60px)'; el.style.transition='all .3s ease'; setTimeout(()=>el.remove(),300); }, 3000);
 }
 
 /* =====================================================
@@ -440,7 +418,7 @@ function closeModal() { document.getElementById('modal').classList.remove('show'
 document.getElementById('modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
 
 /* =====================================================
-   SELECTION MULTIPLE (Produits)
+   SELECTION MULTIPLE
    ===================================================== */
 let selectedIds = new Set();
 
@@ -450,35 +428,23 @@ function toggleSelect(id) {
 }
 
 function toggleSelectAll() {
-  const visible = getFilteredProducts();
-  const allSelected = visible.length > 0 && visible.every(p => selectedIds.has(p.id));
-  if (allSelected) { visible.forEach(p => selectedIds.delete(p.id)); } else { visible.forEach(p => selectedIds.add(p.id)); }
-  updateSelectionUI();
-  renderProducts();
+  const vis = getFilteredProducts();
+  const allSel = vis.length > 0 && vis.every(p => selectedIds.has(p.id));
+  if (allSel) vis.forEach(p => selectedIds.delete(p.id)); else vis.forEach(p => selectedIds.add(p.id));
+  updateSelectionUI(); renderProducts();
 }
 
-function clearSelection() {
-  selectedIds.clear();
-  updateSelectionUI();
-  renderProducts();
-}
+function clearSelection() { selectedIds.clear(); updateSelectionUI(); renderProducts(); }
 
 function updateSelectionUI() {
   const bar = document.getElementById('bulkBar');
   const count = document.getElementById('bulkCount');
   const label = document.getElementById('selectCount');
   const cb = document.getElementById('selectAllCb');
-  const visible = getFilteredProducts();
-  const allSel = visible.length > 0 && visible.every(p => selectedIds.has(p.id));
-
-  if (selectedIds.size > 0) {
-    bar.classList.add('show');
-    count.textContent = selectedIds.size;
-    label.textContent = selectedIds.size + ' selectionne(s)';
-  } else {
-    bar.classList.remove('show');
-    label.textContent = 'Tout selectionner';
-  }
+  const vis = getFilteredProducts();
+  const allSel = vis.length > 0 && vis.every(p => selectedIds.has(p.id));
+  if (selectedIds.size > 0) { bar.classList.add('show'); count.textContent = selectedIds.size; label.textContent = selectedIds.size + ' selectionne(s)'; }
+  else { bar.classList.remove('show'); label.textContent = 'Tout selectionner'; }
   cb.className = 'custom-cb' + (allSel ? ' checked' : '');
 }
 
@@ -486,69 +452,41 @@ function getFilteredProducts() {
   const prods = Store.get('products');
   const q = (document.getElementById('productSearch')?.value || '').toLowerCase();
   const catF = document.getElementById('productCatFilter')?.value || '';
-  return prods.filter(p => {
-    return p.name.toLowerCase().includes(q) && (!catF || p.catId === +catF);
-  });
+  return prods.filter(p => p.name.toLowerCase().includes(q) && (!catF || p.catId === +catF));
 }
 
 /* =====================================================
    SUPPRESSION MULTIPLE
    ===================================================== */
 function bulkDelete() {
-  const n = selectedIds.size;
-  if (!n) return;
+  const n = selectedIds.size; if (!n) return;
   openModal('Confirmer la suppression multiple',
-    `<div style="text-align:center;padding:10px 0">
-      <i class="fa-solid fa-triangle-exclamation" style="font-size:2.5rem;color:#ef4444;margin-bottom:12px"></i>
-      <p style="color:#f1f5f9;font-size:1.05rem;font-weight:600;margin-bottom:6px">Supprimer ${n} produit(s) ?</p>
-      <p style="color:#8b949e;font-size:.85rem">Cette action est irreversible. Les entrees et sorties liees ne seront pas supprimees.</p>
-    </div>`,
-    `<button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
-     <button class="btn btn-danger" onclick="confirmBulkDelete()"><i class="fa-solid fa-trash"></i> Supprimer ${n} produit(s)</button>`
-  );
+    `<div style="text-align:center;padding:10px 0"><i class="fa-solid fa-triangle-exclamation" style="font-size:2.5rem;color:#ef4444;margin-bottom:12px"></i><p style="color:#f1f5f9;font-size:1.05rem;font-weight:600;margin-bottom:6px">Supprimer ${n} produit(s) ?</p><p style="color:#8b949e;font-size:.85rem">Cette action est irreversible.</p></div>`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-danger" onclick="confirmBulkDelete()"><i class="fa-solid fa-trash"></i> Supprimer ${n} produit(s)</button>`);
 }
-
 function confirmBulkDelete() {
   Store.set('products', Store.get('products').filter(p => !selectedIds.has(p.id)));
-  const n = selectedIds.size;
-  selectedIds.clear();
-  closeModal();
-  toast(`${n} produit(s) supprime(s)`, 'info');
-  updateSelectionUI();
-  renderProducts();
+  const n = selectedIds.size; selectedIds.clear(); closeModal(); toast(`${n} produit(s) supprime(s)`, 'info'); updateSelectionUI(); renderProducts();
 }
 
 /* =====================================================
    IMPORT / EXPORT EXCEL
    ===================================================== */
-
-/* Télécharger le modèle Excel vide */
 function downloadTemplate() {
-  const cats = Store.get('categories');
-  const sups = Store.get('suppliers');
-  const wsData = [
-    ['Nom du produit', 'Categorie', 'Quantite', 'Prix (DH)', 'Stock minimum', 'Fournisseur'],
-    ['Huile d\'olive 1L', cats[0]?.name || 'Alimentation', 100, 85, 20, sups[0]?.name || 'Fournisseur 1'],
-  ];
+  const cats = Store.get('categories'); const sups = Store.get('suppliers');
+  const wsData = [['Nom du produit','Categorie','Quantite','Prix (DH)','Stock minimum','Fournisseur'],['Huile d\'olive 1L',cats[0]?.name||'Alimentation',100,85,20,sups[0]?.name||'Fournisseur 1']];
   const ws = XLSX.utils.aoa_to_sheet(wsData);
-
-  // Largeurs de colonnes
-  ws['!cols'] = [{ wch: 30 }, { wch: 18 }, { wch: 12 }, { wch: 12 }, { wch: 15 }, { wch: 30 }];
-
+  ws['!cols'] = [{wch:30},{wch:18},{wch:12},{wch:12},{wch:15},{wch:30}];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Modele Import');
   XLSX.writeFile(wb, 'GestionStock_Modele_Import.xlsx');
   toast('Modele telecharge', 'info');
 }
 
-/* Ouvrir le modal d'import */
 function openImportModal() {
-  const body = `
+  openModal('Importer depuis Excel', `
     <div style="margin-bottom:16px">
-      <p style="color:#8b949e;font-size:.85rem;margin-bottom:14px">
-        Importez un fichier <strong style="color:#f1f5f9">.xlsx</strong> ou <strong style="color:#f1f5f9">.xls</strong> contenant les colonnes :
-        <span style="color:#f0b429">Nom, Categorie, Quantite, Prix, Stock minimum, Fournisseur</span>.
-      </p>
+      <p style="color:#8b949e;font-size:.85rem;margin-bottom:14px">Importez un fichier <strong style="color:#f1f5f9">.xlsx</strong> ou <strong style="color:#f1f5f9">.xls</strong> contenant les colonnes : <span style="color:#f0b429">Nom, Categorie, Quantite, Prix, Stock minimum, Fournisseur</span>.</p>
       <div class="drop-zone" id="dropZone">
         <input type="file" accept=".xlsx,.xls,.csv" id="fileInput" onchange="handleFileSelect(event)">
         <i class="fa-solid fa-cloud-arrow-up" style="display:block"></i>
@@ -560,240 +498,116 @@ function openImportModal() {
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
         <h4 style="font-size:.9rem;font-weight:600;color:#f0b429" id="previewTitle">Apercu</h4>
         <div style="display:flex;gap:8px;align-items:center">
-          <label class="form-label" style="margin:0;font-size:.78rem">Ecraser les donnees existantes</label>
+          <label class="form-label" style="margin:0;font-size:.78rem">Ecraser les donnees</label>
           <div class="custom-cb" id="overwriteCb" onclick="this.classList.toggle('checked')"></div>
         </div>
       </div>
       <div class="preview-table" id="previewTableWrap"></div>
       <p style="font-size:.78rem;color:#8b949e;margin-top:8px" id="previewInfo"></p>
-    </div>`;
-
-  const footer = `
-    <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
-    <button class="btn btn-primary" id="confirmImportBtn" onclick="confirmImport()" style="display:none">
-      <i class="fa-solid fa-file-import"></i> Importer <span id="importCount"></span>
-    </button>`;
-
-  openModal('Importer depuis Excel', body, footer);
+    </div>`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary" id="confirmImportBtn" onclick="confirmImport()" style="display:none"><i class="fa-solid fa-file-import"></i> Importer <span id="importCount"></span></button>`);
   setupDropZone();
 }
 
-/* Zone de glisser-déposer */
 function setupDropZone() {
-  const zone = document.getElementById('dropZone');
-  if (!zone) return;
+  const zone = document.getElementById('dropZone'); if (!zone) return;
   ['dragenter','dragover'].forEach(ev => zone.addEventListener(ev, e => { e.preventDefault(); zone.classList.add('drag-over'); }));
   ['dragleave','drop'].forEach(ev => zone.addEventListener(ev, e => { e.preventDefault(); zone.classList.remove('drag-over'); }));
-  zone.addEventListener('drop', e => {
-    const file = e.dataTransfer.files[0];
-    if (file) processFile(file);
-  });
+  zone.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) processFile(f); });
 }
 
 let pendingImportData = [];
+function handleFileSelect(e) { const f = e.target.files[0]; if (f) processFile(f); }
 
-/* Sélection de fichier */
-function handleFileSelect(e) {
-  const file = e.target.files[0];
-  if (file) processFile(file);
-}
-
-/* Traitement du fichier Excel */
 function processFile(file) {
-  const validTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','application/vnd.ms-excel','text/csv'];
-  if (!validTypes.includes(file.type) && !file.name.match(/\.(xlsx|xls|csv)$/i)) {
-    toast('Format de fichier non supporte. Utilisez .xlsx ou .xls', 'error');
-    return;
-  }
-
+  if (!file.name.match(/\.(xlsx|xls|csv)$/i)) { toast('Format non supporte. Utilisez .xlsx ou .xls', 'error'); return; }
   const reader = new FileReader();
   reader.onload = function(e) {
     try {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type:'array' });
-      const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(firstSheet, { defval:'' });
-
-      if (rows.length === 0) {
-        toast('Le fichier est vide', 'error');
-        return;
-      }
-
-      // Mapper les colonnes (noms possibles)
-      const cats = Store.get('categories');
-      const sups = Store.get('suppliers');
-      const catMap = {};
-      cats.forEach(c => { catMap[c.name.toLowerCase()] = c.id; });
-      const supMap = {};
-      sups.forEach(s => { supMap[s.name.toLowerCase()] = s.id; });
-
-      pendingImportData = [];
-      let errors = 0;
-
-      rows.forEach((row, i) => {
-        // Essayer de trouver les colonnes par différents noms possibles
-        const name = row['Nom du produit'] || row['Nom'] || row['nom'] || row['Produit'] || row['produit'] || row['name'] || '';
-        const catName = row['Categorie'] || row['categorie'] || row['Catégorie'] || row['catégorie'] || '';
-        const qty = parseFloat(row['Quantite'] || row['quantite'] || row['Quantité'] || row['quantité'] || row['Stock'] || row['stock'] || 0);
-        const price = parseFloat(row['Prix (DH)'] || row['Prix'] || row['prix'] || row['Prix (dh)'] || 0);
-        const min = parseFloat(row['Stock minimum'] || row['stock minimum'] || row['Min'] || row['min'] || row['Seuil'] || row['seuil'] || 5);
-        const supName = row['Fournisseur'] || row['fournisseur'] || '';
-
-        if (!name || !String(name).trim()) { errors++; return; }
-
-        const catId = catMap[String(catName).toLowerCase()] || cats[0]?.id || 1;
-        const supId = supMap[String(supName).toLowerCase()] || sups[0]?.id || 1;
-
-        pendingImportData.push({
-          name: String(name).trim(),
-          catId, qty: Math.max(0, isNaN(qty) ? 0 : qty),
-          price: Math.max(0, isNaN(price) ? 0 : price),
-          min: Math.max(0, isNaN(min) ? 5 : min),
-          supId,
-          _catName: String(catName),
-          _supName: String(supName),
-          _catOk: !!catMap[String(catName).toLowerCase()],
-          _supOk: !!supMap[String(supName).toLowerCase()],
-        });
+      const wb = XLSX.read(new Uint8Array(e.target.result), { type:'array' });
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval:'' });
+      if (!rows.length) { toast('Le fichier est vide', 'error'); return; }
+      const cats = Store.get('categories'); const sups = Store.get('suppliers');
+      const catMap = {}; cats.forEach(c => catMap[c.name.toLowerCase()] = c.id);
+      const supMap = {}; sups.forEach(s => supMap[s.name.toLowerCase()] = s.id);
+      pendingImportData = []; let errors = 0;
+      rows.forEach(row => {
+        const name = row['Nom du produit']||row['Nom']||row['nom']||row['Produit']||row['produit']||row['name']||'';
+        const catName = row['Categorie']||row['categorie']||row['Catégorie']||row['catégorie']||'';
+        const qty = parseFloat(row['Quantite']||row['quantite']||row['Quantité']||row['quantité']||row['Stock']||row['stock']||0);
+        const price = parseFloat(row['Prix (DH)']||row['Prix']||row['prix']||0);
+        const min = parseFloat(row['Stock minimum']||row['stock minimum']||row['Min']||row['min']||row['Seuil']||5);
+        const supName = row['Fournisseur']||row['fournisseur']||'';
+        if (!String(name).trim()) { errors++; return; }
+        pendingImportData.push({ name:String(name).trim(), catId:catMap[String(catName).toLowerCase()]||cats[0]?.id||1, qty:Math.max(0,isNaN(qty)?0:qty), price:Math.max(0,isNaN(price)?0:price), min:Math.max(0,isNaN(min)?5:min), supId:supMap[String(supName).toLowerCase()]||sups[0]?.id||1, _catName:String(catName), _supName:String(supName), _catOk:!!catMap[String(catName).toLowerCase()], _supOk:!!supMap[String(supName).toLowerCase()] });
       });
-
-      if (pendingImportData.length === 0) {
-        toast('Aucune donnee valide trouvee dans le fichier', 'error');
-        return;
-      }
-
-      // Afficher l'aperçu
+      if (!pendingImportData.length) { toast('Aucune donnee valide trouvee', 'error'); return; }
       showImportPreview(errors);
-
-    } catch (err) {
-      console.error(err);
-      toast('Erreur de lecture du fichier : ' + err.message, 'error');
-    }
+    } catch(err) { toast('Erreur de lecture : ' + err.message, 'error'); }
   };
   reader.readAsArrayBuffer(file);
 }
 
-/* Afficher l'aperçu de l'import */
 function showImportPreview(errors) {
-  const preview = document.getElementById('importPreview');
-  const wrap = document.getElementById('previewTableWrap');
-  const info = document.getElementById('previewInfo');
-  const btn = document.getElementById('confirmImportBtn');
-  const countEl = document.getElementById('importCount');
-  const titleEl = document.getElementById('previewTitle');
-
-  preview.style.display = 'block';
-  titleEl.textContent = `Apercu : ${pendingImportData.length} produit(s)`;
-
+  document.getElementById('importPreview').style.display = 'block';
+  document.getElementById('previewTitle').textContent = `Apercu : ${pendingImportData.length} produit(s)`;
   let html = '<table><thead><tr><th>#</th><th>Nom</th><th>Categorie</th><th>Qte</th><th>Prix</th><th>Min</th><th>Fournisseur</th></tr></thead><tbody>';
   pendingImportData.forEach((p, i) => {
-    const catStyle = p._catOk ? '' : 'color:#f59e0b';
-    const supStyle = p._supOk ? '' : 'color:#f59e0b';
-    html += `<tr>
-      <td style="color:#4a5568">${i + 1}</td>
-      <td style="font-weight:500">${p.name}</td>
-      <td style="${catStyle}">${p._catName || '-'}${p._catOk ? '' : ' <i class="fa-solid fa-triangle-exclamation" style="font-size:.65rem"></i>'}</td>
-      <td>${p.qty}</td>
-      <td>${p.price} DH</td>
-      <td>${p.min}</td>
-      <td style="${supStyle}">${p._supName || '-'}${p._supOk ? '' : ' <i class="fa-solid fa-triangle-exclamation" style="font-size:.65rem"></i>'}</td>
-    </tr>`;
+    html += `<tr><td style="color:#4a5568">${i+1}</td><td style="font-weight:500">${p.name}</td><td style="${p._catOk?'':'color:#f59e0b'}">${p._catName||'-'}${p._catOk?'':' <i class="fa-solid fa-triangle-exclamation" style="font-size:.65rem"></i>'}</td><td>${p.qty}</td><td>${p.price} DH</td><td>${p.min}</td><td style="${p._supOk?'':'color:#f59e0b'}">${p._supName||'-'}${p._supOk?'':' <i class="fa-solid fa-triangle-exclamation" style="font-size:.65rem"></i>'}</td></tr>`;
   });
   html += '</tbody></table>';
-  wrap.innerHTML = html;
-
-  let infoText = `${pendingImportData.length} produit(s) a importer.`;
-  if (errors > 0) infoText += ` ${errors} ligne(s) ignoree(s) (nom manquant).`;
-  const unmatched = pendingImportData.filter(p => !p._catOk || !p._supOk);
-  if (unmatched.length > 0) infoText += ` ${unmatched.length} correspondance(s) imprecise(s) (categorie/fournisseur) — affectation par defaut.`;
-  info.textContent = infoText;
-
-  btn.style.display = 'inline-flex';
-  countEl.textContent = pendingImportData.length > 0 ? `(${pendingImportData.length})` : '';
+  document.getElementById('previewTableWrap').innerHTML = html;
+  let info = `${pendingImportData.length} produit(s) a importer.`;
+  if (errors) info += ` ${errors} ligne(s) ignoree(s).`;
+  const un = pendingImportData.filter(p => !p._catOk || !p._supOk);
+  if (un.length) info += ` ${un.length} correspondance(s) imprecise(s) — affectation par defaut.`;
+  document.getElementById('previewInfo').textContent = info;
+  const btn = document.getElementById('confirmImportBtn'); btn.style.display = 'inline-flex';
+  document.getElementById('importCount').textContent = `(${pendingImportData.length})`;
 }
 
-/* Confirmer l'import */
 function confirmImport() {
-  if (pendingImportData.length === 0) return;
-
+  if (!pendingImportData.length) return;
   const overwrite = document.getElementById('overwriteCb').classList.contains('checked');
   let prods = overwrite ? [] : Store.get('products');
-  const maxId = prods.length > 0 ? Math.max(...prods.map(p => p.id)) : 0;
-
-  pendingImportData.forEach((p, i) => {
-    prods.push({
-      id: maxId + i + 1,
-      name: p.name, catId: p.catId, qty: p.qty,
-      price: p.price, min: p.min, supId: p.supId
-    });
-  });
-
+  const maxId = prods.length ? Math.max(...prods.map(p => p.id)) : 0;
+  pendingImportData.forEach((p, i) => prods.push({ id:maxId+i+1, name:p.name, catId:p.catId, qty:p.qty, price:p.price, min:p.min, supId:p.supId }));
   Store.set('products', prods);
-  const n = pendingImportData.length;
-  pendingImportData = [];
-  closeModal();
-  toast(`${n} produit(s) importe(s) avec succes`);
-  renderProducts();
+  const n = pendingImportData.length; pendingImportData = []; closeModal(); toast(`${n} produit(s) importe(s)`); renderProducts();
 }
 
-/* Exporter vers Excel */
 function exportToExcel() {
   const prods = Store.get('products');
-  if (prods.length === 0) { toast('Aucun produit a exporter', 'error'); return; }
-
-  const exportData = prods.map(p => {
-    const cat = getCat(p.catId);
-    const sup = getSup(p.supId);
-    const st = stockStatus(p.qty, p.min);
-    return {
-      'ID': p.id,
-      'Nom du produit': p.name,
-      'Categorie': cat.name,
-      'Quantite': p.qty,
-      'Prix (DH)': p.price,
-      'Valeur (DH)': Math.round(p.qty * p.price),
-      'Stock minimum': p.min,
-      'Statut': st === 'ok' ? 'En stock' : st === 'low' ? 'Stock faible' : 'Rupture',
-      'Fournisseur': sup.name,
-    };
+  if (!prods.length) { toast('Aucun produit a exporter', 'error'); return; }
+  const data = prods.map(p => {
+    const cat = getCat(p.catId); const sup = getSup(p.supId); const st = stockStatus(p.qty, p.min);
+    return { 'ID':p.id, 'Nom du produit':p.name, 'Categorie':cat.name, 'Quantite':p.qty, 'Prix (DH)':p.price, 'Valeur (DH)':Math.round(p.qty*p.price), 'Stock minimum':p.min, 'Statut':st==='ok'?'En stock':st==='low'?'Stock faible':'Rupture', 'Fournisseur':sup.name };
   });
-
-  // Ajouter un résumé en bas
-  const totalValue = prods.reduce((s, p) => s + p.qty * p.price, 0);
-  const alerts = prods.filter(p => stockStatus(p.qty, p.min) === 'low').length;
-  const ruptures = prods.filter(p => stockStatus(p.qty, p.min) === 'out').length;
-
-  const ws = XLSX.utils.json_to_sheet(exportData);
-  ws['!cols'] = [
-    { wch:5 }, { wch:35 }, { wch:16 }, { wch:10 },
-    { wch:10 }, { wch:12 }, { wch:14 }, { wch:14 }, { wch:30 }
-  ];
-
-  // Feuille résumé
+  const totalValue = prods.reduce((s,p)=>s+p.qty*p.price,0);
+  const ws = XLSX.utils.json_to_sheet(data);
+  ws['!cols'] = [{wch:5},{wch:35},{wch:16},{wch:10},{wch:10},{wch:12},{wch:14},{wch:14},{wch:30}];
   const summaryData = [
-    { 'Indicateur': 'Total produits', 'Valeur': prods.length },
-    { 'Indicateur': 'Valeur totale du stock', 'Valeur': Math.round(totalValue) + ' DH' },
-    { 'Indicateur': 'Alertes stock faible', 'Valeur': alerts },
-    { 'Indicateur': 'Ruptures de stock', 'Valeur': ruptures },
-    { 'Indicateur': 'Date export', 'Valeur': new Date().toLocaleString('fr-FR') },
+    { 'Indicateur':'Total produits','Valeur':prods.length },
+    { 'Indicateur':'Valeur totale du stock','Valeur':Math.round(totalValue)+' DH' },
+    { 'Indicateur':'Alertes stock faible','Valeur':prods.filter(p=>stockStatus(p.qty,p.min)==='low').length },
+    { 'Indicateur':'Ruptures de stock','Valeur':prods.filter(p=>stockStatus(p.qty,p.min)==='out').length },
+    { 'Indicateur':'Date export','Valeur':new Date().toLocaleString('fr-FR') },
   ];
   const ws2 = XLSX.utils.json_to_sheet(summaryData);
-  ws2['!cols'] = [{ wch:30 }, { wch:25 }];
-
+  ws2['!cols'] = [{wch:30},{wch:25}];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Produits');
   XLSX.utils.book_append_sheet(wb, ws2, 'Resume');
   XLSX.writeFile(wb, `GestionStock_Export_${today()}.xlsx`);
-  toast(`${prods.length} produit(s) exporte(s) en Excel`);
+  toast(`${prods.length} produit(s) exporte(s)`);
 }
 
 /* =====================================================
-   ROUTEUR
+   ROUTEUR (sans Statistiques)
    ===================================================== */
 const PAGE_TITLES = {
   dashboard:'Tableau de bord', products:'Produits', entries:'Entrees de stock',
-  exits:'Sorties de stock', suppliers:'Fournisseurs', categories:'Categories',
-  inventory:'Inventaire', statistics:'Statistiques'
+  exits:'Sorties de stock', suppliers:'Fournisseurs', categories:'Categories', inventory:'Inventaire'
 };
 let currentPage = 'dashboard';
 let chartInstances = {};
@@ -805,8 +619,7 @@ function navigate(page) {
   document.querySelectorAll('.sidebar-nav li').forEach(l => l.classList.toggle('active', l.dataset.page === page));
   document.getElementById('pageTitle').textContent = PAGE_TITLES[page] || page;
   document.getElementById('sidebar').classList.remove('open');
-  selectedIds.clear();
-  updateSelectionUI();
+  selectedIds.clear(); updateSelectionUI();
   renderPage(page);
 }
 
@@ -820,7 +633,6 @@ function renderPage(page) {
     case 'suppliers': renderSuppliers(); break;
     case 'categories': renderCategories(); break;
     case 'inventory': renderInventory(); break;
-    case 'statistics': renderStatistics(); break;
   }
 }
 
@@ -839,334 +651,152 @@ function handleGlobalSearch(q) {
    ===================================================== */
 function renderDashboard() {
   const prods = Store.get('products');
-  const totalProducts = prods.length;
-  const totalValue = prods.reduce((s, p) => s + p.qty * p.price, 0);
-  const alerts = prods.filter(p => stockStatus(p.qty, p.min) === 'low').length;
-  const ruptures = prods.filter(p => stockStatus(p.qty, p.min) === 'out').length;
-
+  const tv = prods.reduce((s,p)=>s+p.qty*p.price,0);
+  const al = prods.filter(p=>stockStatus(p.qty,p.min)==='low').length;
+  const ru = prods.filter(p=>stockStatus(p.qty,p.min)==='out').length;
   const cards = [
-    { label:'Total Produits', value:fmt(totalProducts), icon:'fa-boxes-stacked', color:'#f0b429', bg:'rgba(240,180,41,.12)', trend:'+3 ce mois', up:true },
-    { label:'Valeur du Stock', value:fmtD(totalValue), icon:'fa-coins', color:'#22c55e', bg:'rgba(34,197,94,.12)', trend:'+12% vs mois dernier', up:true },
-    { label:'Alertes Stock Faible', value:fmt(alerts), icon:'fa-triangle-exclamation', color:'#f59e0b', bg:'rgba(245,158,11,.12)', trend:'Necessitent attention', up:false },
-    { label:'Ruptures de Stock', value:fmt(ruptures), icon:'fa-circle-xmark', color:'#ef4444', bg:'rgba(239,68,68,.12)', trend:'Commandes urgentes', up:false },
+    { label:'Total Produits', value:fmt(prods.length), icon:'fa-boxes-stacked', color:'#f0b429', bg:'rgba(240,180,41,.12)', trend:'+3 ce mois', up:true },
+    { label:'Valeur du Stock', value:fmtD(tv), icon:'fa-coins', color:'#22c55e', bg:'rgba(34,197,94,.12)', trend:'+12% vs mois dernier', up:true },
+    { label:'Alertes Stock Faible', value:fmt(al), icon:'fa-triangle-exclamation', color:'#f59e0b', bg:'rgba(245,158,11,.12)', trend:'Necessitent attention', up:false },
+    { label:'Ruptures de Stock', value:fmt(ru), icon:'fa-circle-xmark', color:'#ef4444', bg:'rgba(239,68,68,.12)', trend:'Commandes urgentes', up:false },
   ];
+  document.getElementById('statCards').innerHTML = cards.map(c => `<div class="stat-card"><div class="icon-wrap" style="background:${c.bg};color:${c.color}"><i class="fa-solid ${c.icon}"></i></div><div class="label">${c.label}</div><div class="value" style="animation:countUp .4s ease">${c.value}</div><div class="trend" style="color:${c.up?'#22c55e':c.color}"><i class="fa-solid ${c.up?'fa-arrow-trend-up':'fa-info-circle'}" style="font-size:.65rem"></i> ${c.trend}</div></div>`).join('');
 
-  document.getElementById('statCards').innerHTML = cards.map(c => `
-    <div class="stat-card">
-      <div class="icon-wrap" style="background:${c.bg};color:${c.color}"><i class="fa-solid ${c.icon}"></i></div>
-      <div class="label">${c.label}</div>
-      <div class="value" style="animation:countUp .4s ease">${c.value}</div>
-      <div class="trend" style="color:${c.up ? '#22c55e' : c.color}">
-        <i class="fa-solid ${c.up ? 'fa-arrow-trend-up' : 'fa-info-circle'}" style="font-size:.65rem"></i> ${c.trend}
-      </div>
-    </div>`).join('');
+  const labels=[],entryData=[],exitData=[];
+  for(let d=29;d>=0;d--){const date=new Date();date.setDate(date.getDate()-d);const ds=date.toISOString().split('T')[0];labels.push(date.getDate()+'/'+(date.getMonth()+1));entryData.push(Store.get('entries').filter(e=>e.date===ds).reduce((s,e)=>s+e.qty,0));exitData.push(Store.get('exits').filter(e=>e.date===ds).reduce((s,e)=>s+e.qty,0));}
+  chartInstances.dash = new Chart(document.getElementById('dashChart').getContext('2d'),{type:'line',data:{labels,datasets:[{label:'Entrees',data:entryData,borderColor:'#22c55e',backgroundColor:'rgba(34,197,94,.08)',fill:true,tension:.4,pointRadius:0,borderWidth:2},{label:'Sorties',data:exitData,borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,.08)',fill:true,tension:.4,pointRadius:0,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b949e',font:{family:'Space Grotesk',size:12}}}},scales:{x:{ticks:{color:'#4a5568',font:{size:10},maxTicksLimit:10},grid:{color:'#1e2a3a'}},y:{ticks:{color:'#4a5568',font:{size:10}},grid:{color:'#1e2a3a'},beginAtZero:true}},interaction:{intersect:false,mode:'index'}}});
 
-  const labels = [], entryData = [], exitData = [];
-  for (let d = 29; d >= 0; d--) {
-    const date = new Date(); date.setDate(date.getDate() - d);
-    const ds = date.toISOString().split('T')[0];
-    labels.push(date.getDate() + '/' + (date.getMonth()+1));
-    entryData.push(Store.get('entries').filter(e => e.date === ds).reduce((s, e) => s + e.qty, 0));
-    exitData.push(Store.get('exits').filter(e => e.date === ds).reduce((s, e) => s + e.qty, 0));
-  }
+  const cats=Store.get('categories');
+  const catData=cats.map(c=>prods.filter(p=>p.catId===c.id).reduce((s,p)=>s+p.qty,0));
+  chartInstances.doughnut = new Chart(document.getElementById('dashDoughnut').getContext('2d'),{type:'doughnut',data:{labels:cats.map(c=>c.name),datasets:[{data:catData,backgroundColor:cats.map(c=>c.color),borderWidth:0,hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'bottom',labels:{color:'#8b949e',font:{family:'Space Grotesk',size:11},padding:12,usePointStyle:true,pointStyleWidth:8}}}}});
 
-  chartInstances.dash = new Chart(document.getElementById('dashChart').getContext('2d'), {
-    type:'line',
-    data:{ labels, datasets:[
-      { label:'Entrees', data:entryData, borderColor:'#22c55e', backgroundColor:'rgba(34,197,94,.08)', fill:true, tension:.4, pointRadius:0, borderWidth:2 },
-      { label:'Sorties', data:exitData, borderColor:'#ef4444', backgroundColor:'rgba(239,68,68,.08)', fill:true, tension:.4, pointRadius:0, borderWidth:2 },
-    ]},
-    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{ color:'#8b949e', font:{ family:'Space Grotesk', size:12 } } } },
-      scales:{ x:{ ticks:{ color:'#4a5568', font:{ size:10 }, maxTicksLimit:10 }, grid:{ color:'#1e2a3a' } }, y:{ ticks:{ color:'#4a5568', font:{ size:10 } }, grid:{ color:'#1e2a3a' }, beginAtZero:true } },
-      interaction:{ intersect:false, mode:'index' } }
-  });
-
-  const cats = Store.get('categories');
-  const catData = cats.map(c => prods.filter(p => p.catId === c.id).reduce((s, p) => s + p.qty, 0));
-  chartInstances.doughnut = new Chart(document.getElementById('dashDoughnut').getContext('2d'), {
-    type:'doughnut',
-    data:{ labels:cats.map(c=>c.name), datasets:[{ data:catData, backgroundColor:cats.map(c=>c.color), borderWidth:0, hoverOffset:8 }] },
-    options:{ responsive:true, maintainAspectRatio:false, cutout:'65%', plugins:{ legend:{ position:'bottom', labels:{ color:'#8b949e', font:{ family:'Space Grotesk', size:11 }, padding:12, usePointStyle:true, pointStyleWidth:8 } } } }
-  });
-
-  const allMoves = [
-    ...Store.get('entries').slice(-5).map(e => ({ ...e, type:'entry' })),
-    ...Store.get('exits').slice(-5).map(e => ({ ...e, type:'exit' }))
-  ].sort((a, b) => b.id - a.id).slice(0, 8);
-
-  document.getElementById('recentActivity').innerHTML = allMoves.length ? `<table class="data-table"><thead><tr><th>Type</th><th>Produit</th><th>Quantite</th><th>Date</th></tr></thead><tbody>${allMoves.map(m => {
-    const p = getProd(m.prodId);
-    return `<tr>
-      <td>${m.type === 'entry' ? '<span class="badge badge-green"><i class="fa-solid fa-arrow-down"></i> Entree</span>' : '<span class="badge badge-red"><i class="fa-solid fa-arrow-up"></i> Sortie</span>'}</td>
-      <td>${p.name}</td><td style="font-weight:600">${m.type === 'entry' ? '+' : '-'}${m.qty}</td>
-      <td style="color:#8b949e">${m.date}</td>
-    </tr>`;
-  }).join('')}</tbody></table>` : '<p style="color:#8b949e;padding:20px;text-align:center">Aucune activite</p>';
+  const allMoves=[...Store.get('entries').slice(-5).map(e=>({...e,type:'entry'})),...Store.get('exits').slice(-5).map(e=>({...e,type:'exit'}))].sort((a,b)=>b.id-a.id).slice(0,8);
+  document.getElementById('recentActivity').innerHTML = allMoves.length ? `<table class="data-table"><thead><tr><th>Type</th><th>Produit</th><th>Quantite</th><th>Date</th></tr></thead><tbody>${allMoves.map(m=>{const p=getProd(m.prodId);return `<tr><td>${m.type==='entry'?'<span class="badge badge-green"><i class="fa-solid fa-arrow-down"></i> Entree</span>':'<span class="badge badge-red"><i class="fa-solid fa-arrow-up"></i> Sortie</span>'}</td><td>${p.name}</td><td style="font-weight:600">${m.type==='entry'?'+':'-'}${m.qty}</td><td style="color:#8b949e">${m.date}</td></tr>`;}).join('')}</tbody></table>` : '<p style="color:#8b949e;padding:20px;text-align:center">Aucune activite</p>';
 }
 
 /* =====================================================
    PRODUITS
    ===================================================== */
 function renderProducts() {
-  const prods = Store.get('products');
-  const cats = Store.get('categories');
-  const q = (document.getElementById('productSearch')?.value || '').toLowerCase();
-  const catF = document.getElementById('productCatFilter')?.value || '';
-
+  const prods = Store.get('products'); const cats = Store.get('categories');
+  const q = (document.getElementById('productSearch')?.value||'').toLowerCase();
+  const catF = document.getElementById('productCatFilter')?.value||'';
   const sel = document.getElementById('productCatFilter');
-  if (sel && sel.options.length <= 1) {
-    cats.forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = c.name; sel.appendChild(o); });
-  }
-
+  if (sel && sel.options.length <= 1) cats.forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = c.name; sel.appendChild(o); });
   const filtered = prods.filter(p => p.name.toLowerCase().includes(q) && (!catF || p.catId === +catF));
-
   const allSel = filtered.length > 0 && filtered.every(p => selectedIds.has(p.id));
-  const cb = document.getElementById('selectAllCb');
-  if (cb) cb.className = 'custom-cb' + (allSel ? ' checked' : '');
-
+  const cb = document.getElementById('selectAllCb'); if (cb) cb.className = 'custom-cb'+(allSel?' checked':'');
   document.querySelector('#productsTable tbody').innerHTML = filtered.length ? filtered.map(p => {
-    const cat = getCat(p.catId);
-    const st = stockStatus(p.qty, p.min);
-    const checked = selectedIds.has(p.id);
-    return `<tr class="${checked ? 'selected-row' : ''}">
-      <td><div class="custom-cb ${checked ? 'checked' : ''}" onclick="toggleSelect(${p.id});renderProducts()"></div></td>
-      <td style="font-weight:600">${p.name}</td>
-      <td><span style="color:${cat.color}">${cat.name}</span></td>
-      <td>${fmt(p.qty)}</td>
-      <td>${fmtD(p.price)}</td>
-      <td style="font-weight:600">${fmtD(p.qty * p.price)}</td>
-      <td>${statusBadge(st)}</td>
-      <td>
-        <div style="display:flex;gap:6px">
-          <button class="btn btn-sm btn-secondary btn-icon" onclick="openProductModal(${p.id})" title="Modifier"><i class="fa-solid fa-pen-to-square"></i></button>
-          <button class="btn btn-sm btn-danger btn-icon" onclick="deleteProduct(${p.id})" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
-        </div>
-      </td>
-    </tr>`;
+    const cat=getCat(p.catId); const st=stockStatus(p.qty,p.min); const ck=selectedIds.has(p.id);
+    return `<tr class="${ck?'selected-row':''}"><td><div class="custom-cb ${ck?'checked':''}" onclick="toggleSelect(${p.id});renderProducts()"></div></td><td style="font-weight:600">${p.name}</td><td><span style="color:${cat.color}">${cat.name}</span></td><td>${fmt(p.qty)}</td><td>${fmtD(p.price)}</td><td style="font-weight:600">${fmtD(p.qty*p.price)}</td><td>${statusBadge(st)}</td><td><div style="display:flex;gap:6px"><button class="btn btn-sm btn-secondary btn-icon" onclick="openProductModal(${p.id})"><i class="fa-solid fa-pen-to-square"></i></button><button class="btn btn-sm btn-danger btn-icon" onclick="deleteProduct(${p.id})"><i class="fa-solid fa-trash"></i></button></div></td></tr>`;
   }).join('') : '<tr><td colspan="8" style="text-align:center;color:#8b949e;padding:32px">Aucun produit trouve</td></tr>';
-
   updateSelectionUI();
 }
 
 function openProductModal(id) {
-  const cats = Store.get('categories');
-  const sups = Store.get('suppliers');
+  const cats=Store.get('categories'); const sups=Store.get('suppliers');
   const p = id ? getProd(id) : { name:'', catId:cats[0]?.id||'', qty:0, price:0, min:5, supId:sups[0]?.id||'' };
-  openModal(id ? 'Modifier le produit' : 'Ajouter un produit', `
-    <div style="display:flex;flex-direction:column;gap:14px">
-      <div><label class="form-label">Nom du produit</label><input type="text" class="form-input" id="mProdName" value="${p.name}"></div>
-      <div class="grid grid-cols-2 gap-3">
-        <div><label class="form-label">Categorie</label><select class="form-input" id="mProdCat">${cats.map(c => `<option value="${c.id}" ${c.id===p.catId?'selected':''}>${c.name}</option>`).join('')}</select></div>
-        <div><label class="form-label">Fournisseur</label><select class="form-input" id="mProdSup">${sups.map(s => `<option value="${s.id}" ${s.id===p.supId?'selected':''}>${s.name}</option>`).join('')}</select></div>
-      </div>
-      <div class="grid grid-cols-3 gap-3">
-        <div><label class="form-label">Quantite</label><input type="number" class="form-input" id="mProdQty" value="${p.qty}" min="0"></div>
-        <div><label class="form-label">Prix (DH)</label><input type="number" class="form-input" id="mProdPrice" value="${p.price}" min="0" step="0.5"></div>
-        <div><label class="form-label">Stock min</label><input type="number" class="form-input" id="mProdMin" value="${p.min}" min="0"></div>
-      </div>
-    </div>`,
-    `<button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
-     <button class="btn btn-primary" onclick="saveProduct(${id || 0})">${id ? 'Enregistrer' : 'Ajouter'}</button>`
-  );
+  openModal(id?'Modifier le produit':'Ajouter un produit',`<div style="display:flex;flex-direction:column;gap:14px"><div><label class="form-label">Nom du produit</label><input type="text" class="form-input" id="mProdName" value="${p.name}"></div><div class="grid grid-cols-2 gap-3"><div><label class="form-label">Categorie</label><select class="form-input" id="mProdCat">${cats.map(c=>`<option value="${c.id}" ${c.id===p.catId?'selected':''}>${c.name}</option>`).join('')}</select></div><div><label class="form-label">Fournisseur</label><select class="form-input" id="mProdSup">${sups.map(s=>`<option value="${s.id}" ${s.id===p.supId?'selected':''}>${s.name}</option>`).join('')}</select></div></div><div class="grid grid-cols-3 gap-3"><div><label class="form-label">Quantite</label><input type="number" class="form-input" id="mProdQty" value="${p.qty}" min="0"></div><div><label class="form-label">Prix (DH)</label><input type="number" class="form-input" id="mProdPrice" value="${p.price}" min="0" step="0.5"></div><div><label class="form-label">Stock min</label><input type="number" class="form-input" id="mProdMin" value="${p.min}" min="0"></div></div></div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="saveProduct(${id||0})">${id?'Enregistrer':'Ajouter'}</button>`);
 }
 
 function saveProduct(id) {
-  const name = document.getElementById('mProdName').value.trim();
-  if (!name) { toast('Veuillez saisir un nom de produit', 'error'); return; }
-  const data = {
-    name, catId: +document.getElementById('mProdCat').value, supId: +document.getElementById('mProdSup').value,
-    qty: Math.max(0, +document.getElementById('mProdQty').value || 0),
-    price: Math.max(0, +document.getElementById('mProdPrice').value || 0),
-    min: Math.max(0, +document.getElementById('mProdMin').value || 0),
-  };
-  const prods = Store.get('products');
-  if (id) { const idx = prods.findIndex(p => p.id === id); if (idx >= 0) prods[idx] = { ...prods[idx], ...data }; toast('Produit modifie'); }
-  else { prods.push({ id: nextId(prods), ...data }); toast('Produit ajoute'); }
-  Store.set('products', prods); closeModal(); renderProducts();
+  const name=document.getElementById('mProdName').value.trim();
+  if(!name){toast('Veuillez saisir un nom','error');return;}
+  const data={name,catId:+document.getElementById('mProdCat').value,supId:+document.getElementById('mProdSup').value,qty:Math.max(0,+document.getElementById('mProdQty').value||0),price:Math.max(0,+document.getElementById('mProdPrice').value||0),min:Math.max(0,+document.getElementById('mProdMin').value||0)};
+  const prods=Store.get('products');
+  if(id){const idx=prods.findIndex(p=>p.id===id);if(idx>=0)prods[idx]={...prods[idx],...data};toast('Produit modifie');}else{prods.push({id:nextId(prods),...data});toast('Produit ajoute');}
+  Store.set('products',prods);closeModal();renderProducts();
 }
 
 function deleteProduct(id) {
-  const p = getProd(id);
-  openModal('Confirmer la suppression',
-    `<div style="text-align:center;padding:10px 0">
-      <i class="fa-solid fa-triangle-exclamation" style="font-size:2.5rem;color:#ef4444;margin-bottom:12px"></i>
-      <p style="color:#f1f5f9;font-size:1.05rem;font-weight:600;margin-bottom:6px">Supprimer ce produit ?</p>
-      <p style="color:#8b949e;font-size:.85rem">${p.name}</p>
-    </div>`,
-    `<button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
-     <button class="btn btn-danger" onclick="Store.set('products',Store.get('products').filter(p=>p.id!==${id}));closeModal();toast('Produit supprime','info');renderProducts();"><i class="fa-solid fa-trash"></i> Supprimer</button>`
-  );
+  const p=getProd(id);
+  openModal('Confirmer la suppression',`<div style="text-align:center;padding:10px 0"><i class="fa-solid fa-triangle-exclamation" style="font-size:2.5rem;color:#ef4444;margin-bottom:12px"></i><p style="color:#f1f5f9;font-size:1.05rem;font-weight:600;margin-bottom:6px">Supprimer ce produit ?</p><p style="color:#8b949e;font-size:.85rem">${p.name}</p></div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-danger" onclick="Store.set('products',Store.get('products').filter(p=>p.id!==${id}));closeModal();toast('Produit supprime','info');renderProducts();"><i class="fa-solid fa-trash"></i> Supprimer</button>`);
 }
 
 /* =====================================================
    ENTREES
    ===================================================== */
 function renderEntries() {
-  const prods = Store.get('products');
-  document.getElementById('entryProduct').innerHTML = prods.map(p => `<option value="${p.id}">${p.name} (stock: ${p.qty})</option>`).join('');
-  document.getElementById('entryDate').value = today();
-  const entries = Store.get('entries').sort((a, b) => b.id - a.id).slice(0, 50);
-  document.getElementById('entriesBody').innerHTML = entries.length ? entries.map(e => {
-    const p = getProd(e.prodId);
-    return `<tr><td style="color:#8b949e">${e.date}</td><td style="font-weight:500">${p.name}</td><td style="color:#22c55e;font-weight:600">+${e.qty}</td><td style="color:#8b949e">${e.note || '-'}</td></tr>`;
-  }).join('') : '<tr><td colspan="4" style="text-align:center;color:#8b949e;padding:32px">Aucune entree</td></tr>';
+  const prods=Store.get('products');
+  document.getElementById('entryProduct').innerHTML=prods.map(p=>`<option value="${p.id}">${p.name} (stock: ${p.qty})</option>`).join('');
+  document.getElementById('entryDate').value=today();
+  const entries=Store.get('entries').sort((a,b)=>b.id-a.id).slice(0,50);
+  document.getElementById('entriesBody').innerHTML=entries.length?entries.map(e=>{const p=getProd(e.prodId);return `<tr><td style="color:#8b949e">${e.date}</td><td style="font-weight:500">${p.name}</td><td style="color:#22c55e;font-weight:600">+${e.qty}</td><td style="color:#8b949e">${e.note||'-'}</td></tr>`;}).join(''):'<tr><td colspan="4" style="text-align:center;color:#8b949e;padding:32px">Aucune entree</td></tr>';
 }
-
 function addEntry() {
-  const prodId = +document.getElementById('entryProduct').value;
-  const qty = +document.getElementById('entryQty').value;
-  const date = document.getElementById('entryDate').value;
-  const note = document.getElementById('entryNote').value.trim();
-  if (!prodId || !qty || qty <= 0) { toast('Veuillez remplir correctement le formulaire', 'error'); return; }
-  if (!date) { toast('Veuillez selectionner une date', 'error'); return; }
-  const entries = Store.get('entries');
-  entries.push({ id: nextId(entries), prodId, qty, date, note });
-  Store.set('entries', entries);
-  const prods = Store.get('products');
-  const idx = prods.findIndex(p => p.id === prodId);
-  if (idx >= 0) { prods[idx].qty += qty; Store.set('products', prods); }
-  document.getElementById('entryQty').value = '';
-  document.getElementById('entryNote').value = '';
-  toast(`Entree de ${qty} unites enregistree`);
-  renderEntries();
+  const prodId=+document.getElementById('entryProduct').value,qty=+document.getElementById('entryQty').value,date=document.getElementById('entryDate').value,note=document.getElementById('entryNote').value.trim();
+  if(!prodId||!qty||qty<=0){toast('Veuillez remplir le formulaire','error');return;}if(!date){toast('Selectionnez une date','error');return;}
+  const entries=Store.get('entries');entries.push({id:nextId(entries),prodId,qty,date,note});Store.set('entries',entries);
+  const prods=Store.get('products');const idx=prods.findIndex(p=>p.id===prodId);if(idx>=0){prods[idx].qty+=qty;Store.set('products',prods);}
+  document.getElementById('entryQty').value='';document.getElementById('entryNote').value='';toast(`Entree de ${qty} unites enregistree`);renderEntries();
 }
 
 /* =====================================================
    SORTIES
    ===================================================== */
 function renderExits() {
-  const prods = Store.get('products');
-  document.getElementById('exitProduct').innerHTML = prods.map(p => `<option value="${p.id}">${p.name} (stock: ${p.qty})</option>`).join('');
-  document.getElementById('exitDate').value = today();
-  const exits = Store.get('exits').sort((a, b) => b.id - a.id).slice(0, 50);
-  document.getElementById('exitsBody').innerHTML = exits.length ? exits.map(e => {
-    const p = getProd(e.prodId);
-    return `<tr><td style="color:#8b949e">${e.date}</td><td style="font-weight:500">${p.name}</td><td style="color:#ef4444;font-weight:600">-${e.qty}</td><td style="color:#8b949e">${e.note || '-'}</td></tr>`;
-  }).join('') : '<tr><td colspan="4" style="text-align:center;color:#8b949e;padding:32px">Aucune sortie</td></tr>';
+  const prods=Store.get('products');
+  document.getElementById('exitProduct').innerHTML=prods.map(p=>`<option value="${p.id}">${p.name} (stock: ${p.qty})</option>`).join('');
+  document.getElementById('exitDate').value=today();
+  const exits=Store.get('exits').sort((a,b)=>b.id-a.id).slice(0,50);
+  document.getElementById('exitsBody').innerHTML=exits.length?exits.map(e=>{const p=getProd(e.prodId);return `<tr><td style="color:#8b949e">${e.date}</td><td style="font-weight:500">${p.name}</td><td style="color:#ef4444;font-weight:600">-${e.qty}</td><td style="color:#8b949e">${e.note||'-'}</td></tr>`;}).join(''):'<tr><td colspan="4" style="text-align:center;color:#8b949e;padding:32px">Aucune sortie</td></tr>';
 }
-
 function addExit() {
-  const prodId = +document.getElementById('exitProduct').value;
-  const qty = +document.getElementById('exitQty').value;
-  const date = document.getElementById('exitDate').value;
-  const note = document.getElementById('exitNote').value.trim();
-  if (!prodId || !qty || qty <= 0) { toast('Veuillez remplir correctement le formulaire', 'error'); return; }
-  if (!date) { toast('Veuillez selectionner une date', 'error'); return; }
-  const prods = Store.get('products');
-  const p = prods.find(x => x.id === prodId);
-  if (!p || p.qty < qty) { toast('Stock insuffisant pour cette sortie', 'error'); return; }
-  const exits = Store.get('exits');
-  exits.push({ id: nextId(exits), prodId, qty, date, note });
-  Store.set('exits', exits);
-  p.qty -= qty;
-  Store.set('products', prods);
-  document.getElementById('exitQty').value = '';
-  document.getElementById('exitNote').value = '';
-  toast(`Sortie de ${qty} unites enregistree`);
-  renderExits();
+  const prodId=+document.getElementById('exitProduct').value,qty=+document.getElementById('exitQty').value,date=document.getElementById('exitDate').value,note=document.getElementById('exitNote').value.trim();
+  if(!prodId||!qty||qty<=0){toast('Veuillez remplir le formulaire','error');return;}if(!date){toast('Selectionnez une date','error');return;}
+  const prods=Store.get('products');const p=prods.find(x=>x.id===prodId);
+  if(!p||p.qty<qty){toast('Stock insuffisant','error');return;}
+  const exits=Store.get('exits');exits.push({id:nextId(exits),prodId,qty,date,note});Store.set('exits',exits);
+  p.qty-=qty;Store.set('products',prods);
+  document.getElementById('exitQty').value='';document.getElementById('exitNote').value='';toast(`Sortie de ${qty} unites enregistree`);renderExits();
 }
 
 /* =====================================================
    FOURNISSEURS
    ===================================================== */
 function renderSuppliers() {
-  const sups = Store.get('suppliers');
-  const prods = Store.get('products');
-  const q = (document.getElementById('supplierSearch')?.value || '').toLowerCase();
-  const filtered = sups.filter(s => s.name.toLowerCase().includes(q));
-  document.getElementById('suppliersBody').innerHTML = filtered.length ? filtered.map(s => {
-    const nb = prods.filter(p => p.supId === s.id).length;
-    return `<tr><td style="font-weight:600">${s.name}</td><td style="color:#8b949e">${s.phone}</td><td style="color:#8b949e">${s.email}</td>
-      <td><span class="badge" style="background:rgba(240,180,41,.12);color:#f0b429">${nb} produit${nb>1?'s':''}</span></td>
-      <td><div style="display:flex;gap:6px">
-        <button class="btn btn-sm btn-secondary btn-icon" onclick="openSupplierModal(${s.id})"><i class="fa-solid fa-pen-to-square"></i></button>
-        <button class="btn btn-sm btn-danger btn-icon" onclick="deleteSupplier(${s.id})"><i class="fa-solid fa-trash"></i></button>
-      </div></td></tr>`;
-  }).join('') : '<tr><td colspan="5" style="text-align:center;color:#8b949e;padding:32px">Aucun fournisseur</td></tr>';
+  const sups=Store.get('suppliers');const prods=Store.get('products');
+  const q=(document.getElementById('supplierSearch')?.value||'').toLowerCase();
+  const filtered=sups.filter(s=>s.name.toLowerCase().includes(q));
+  document.getElementById('suppliersBody').innerHTML=filtered.length?filtered.map(s=>{const nb=prods.filter(p=>p.supId===s.id).length;return `<tr><td style="font-weight:600">${s.name}</td><td style="color:#8b949e">${s.phone}</td><td style="color:#8b949e">${s.email}</td><td><span class="badge" style="background:rgba(240,180,41,.12);color:#f0b429">${nb} produit${nb>1?'s':''}</span></td><td><div style="display:flex;gap:6px"><button class="btn btn-sm btn-secondary btn-icon" onclick="openSupplierModal(${s.id})"><i class="fa-solid fa-pen-to-square"></i></button><button class="btn btn-sm btn-danger btn-icon" onclick="deleteSupplier(${s.id})"><i class="fa-solid fa-trash"></i></button></div></td></tr>`;}).join(''):'<tr><td colspan="5" style="text-align:center;color:#8b949e;padding:32px">Aucun fournisseur</td></tr>';
 }
-
 function openSupplierModal(id) {
-  const s = id ? getSup(id) : { name:'', phone:'', email:'' };
-  openModal(id ? 'Modifier le fournisseur' : 'Ajouter un fournisseur', `
-    <div style="display:flex;flex-direction:column;gap:14px">
-      <div><label class="form-label">Nom</label><input type="text" class="form-input" id="mSupName" value="${s.name}"></div>
-      <div><label class="form-label">Telephone</label><input type="text" class="form-input" id="mSupPhone" value="${s.phone}"></div>
-      <div><label class="form-label">Email</label><input type="email" class="form-input" id="mSupEmail" value="${s.email}"></div>
-    </div>`,
-    `<button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
-     <button class="btn btn-primary" onclick="saveSupplier(${id || 0})">${id ? 'Enregistrer' : 'Ajouter'}</button>`);
+  const s=id?getSup(id):{name:'',phone:'',email:''};
+  openModal(id?'Modifier le fournisseur':'Ajouter un fournisseur',`<div style="display:flex;flex-direction:column;gap:14px"><div><label class="form-label">Nom</label><input type="text" class="form-input" id="mSupName" value="${s.name}"></div><div><label class="form-label">Telephone</label><input type="text" class="form-input" id="mSupPhone" value="${s.phone}"></div><div><label class="form-label">Email</label><input type="email" class="form-input" id="mSupEmail" value="${s.email}"></div></div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="saveSupplier(${id||0})">${id?'Enregistrer':'Ajouter'}</button>`);
 }
-
 function saveSupplier(id) {
-  const name = document.getElementById('mSupName').value.trim();
-  if (!name) { toast('Veuillez saisir un nom', 'error'); return; }
-  const data = { name, phone: document.getElementById('mSupPhone').value.trim(), email: document.getElementById('mSupEmail').value.trim() };
-  const sups = Store.get('suppliers');
-  if (id) { const idx = sups.findIndex(s => s.id === id); if (idx >= 0) sups[idx] = { ...sups[idx], ...data }; toast('Fournisseur modifie'); }
-  else { sups.push({ id: nextId(sups), ...data }); toast('Fournisseur ajoute'); }
-  Store.set('suppliers', sups); closeModal(); renderSuppliers();
+  const name=document.getElementById('mSupName').value.trim();if(!name){toast('Saisissez un nom','error');return;}
+  const data={name,phone:document.getElementById('mSupPhone').value.trim(),email:document.getElementById('mSupEmail').value.trim()};
+  const sups=Store.get('suppliers');
+  if(id){const idx=sups.findIndex(s=>s.id===id);if(idx>=0)sups[idx]={...sups[idx],...data};toast('Fournisseur modifie');}else{sups.push({id:nextId(sups),...data});toast('Fournisseur ajoute');}
+  Store.set('suppliers',sups);closeModal();renderSuppliers();
 }
-
 function deleteSupplier(id) {
-  openModal('Confirmer', '<p style="color:#8b949e">Supprimer ce fournisseur ?</p>',
-    `<button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
-     <button class="btn btn-danger" onclick="Store.set('suppliers',Store.get('suppliers').filter(s=>s.id!==${id}));closeModal();toast('Fournisseur supprime','info');renderSuppliers();">Supprimer</button>`);
+  openModal('Confirmer','<p style="color:#8b949e">Supprimer ce fournisseur ?</p>',`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-danger" onclick="Store.set('suppliers',Store.get('suppliers').filter(s=>s.id!==${id}));closeModal();toast('Fournisseur supprime','info');renderSuppliers();">Supprimer</button>`);
 }
 
 /* =====================================================
    CATEGORIES
    ===================================================== */
 function renderCategories() {
-  const cats = Store.get('categories');
-  const prods = Store.get('products');
-  document.getElementById('categoriesGrid').innerHTML = cats.map(c => {
-    const nb = prods.filter(p => p.catId === c.id).length;
-    const val = prods.filter(p => p.catId === c.id).reduce((s, p) => s + p.qty * p.price, 0);
-    return `<div class="stat-card" style="border-left:3px solid ${c.color}">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <h4 style="font-weight:700;font-size:1.05rem">${c.name}</h4>
-        <div style="display:flex;gap:6px">
-          <button class="btn btn-sm btn-secondary btn-icon" onclick="openCategoryModal(${c.id})"><i class="fa-solid fa-pen-to-square"></i></button>
-          <button class="btn btn-sm btn-danger btn-icon" onclick="deleteCategory(${c.id})"><i class="fa-solid fa-trash"></i></button>
-        </div>
-      </div>
-      <p style="font-size:.82rem;color:#8b949e;margin-bottom:10px">${c.desc}</p>
-      <div style="display:flex;gap:16px;font-size:.82rem">
-        <span><strong style="color:#f1f5f9">${nb}</strong> <span style="color:#8b949e">produit${nb>1?'s':''}</span></span>
-        <span><strong style="color:#f1f5f9">${fmtD(val)}</strong></span>
-      </div>
-    </div>`;
-  }).join('');
+  const cats=Store.get('categories');const prods=Store.get('products');
+  document.getElementById('categoriesGrid').innerHTML=cats.map(c=>{const nb=prods.filter(p=>p.catId===c.id).length;const val=prods.filter(p=>p.catId===c.id).reduce((s,p)=>s+p.qty*p.price,0);return `<div class="stat-card" style="border-left:3px solid ${c.color}"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><h4 style="font-weight:700;font-size:1.05rem">${c.name}</h4><div style="display:flex;gap:6px"><button class="btn btn-sm btn-secondary btn-icon" onclick="openCategoryModal(${c.id})"><i class="fa-solid fa-pen-to-square"></i></button><button class="btn btn-sm btn-danger btn-icon" onclick="deleteCategory(${c.id})"><i class="fa-solid fa-trash"></i></button></div></div><p style="font-size:.82rem;color:#8b949e;margin-bottom:10px">${c.desc}</p><div style="display:flex;gap:16px;font-size:.82rem"><span><strong style="color:#f1f5f9">${nb}</strong> <span style="color:#8b949e">produit${nb>1?'s':''}</span></span><span><strong style="color:#f1f5f9">${fmtD(val)}</strong></span></div></div>`;}).join('');
 }
-
 function openCategoryModal(id) {
-  const c = id ? getCat(id) : { name:'', desc:'', color:'#f0b429' };
-  openModal(id ? 'Modifier la categorie' : 'Ajouter une categorie', `
-    <div style="display:flex;flex-direction:column;gap:14px">
-      <div><label class="form-label">Nom</label><input type="text" class="form-input" id="mCatName" value="${c.name}"></div>
-      <div><label class="form-label">Description</label><input type="text" class="form-input" id="mCatDesc" value="${c.desc}"></div>
-      <div><label class="form-label">Couleur</label><input type="color" id="mCatColor" value="${c.color}" style="width:60px;height:36px;border:none;background:none;cursor:pointer"></div>
-    </div>`,
-    `<button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
-     <button class="btn btn-primary" onclick="saveCategory(${id || 0})">${id ? 'Enregistrer' : 'Ajouter'}</button>`);
+  const c=id?getCat(id):{name:'',desc:'',color:'#f0b429'};
+  openModal(id?'Modifier la categorie':'Ajouter une categorie',`<div style="display:flex;flex-direction:column;gap:14px"><div><label class="form-label">Nom</label><input type="text" class="form-input" id="mCatName" value="${c.name}"></div><div><label class="form-label">Description</label><input type="text" class="form-input" id="mCatDesc" value="${c.desc}"></div><div><label class="form-label">Couleur</label><input type="color" id="mCatColor" value="${c.color}" style="width:60px;height:36px;border:none;background:none;cursor:pointer"></div></div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="saveCategory(${id||0})">${id?'Enregistrer':'Ajouter'}</button>`);
 }
-
 function saveCategory(id) {
-  const name = document.getElementById('mCatName').value.trim();
-  if (!name) { toast('Veuillez saisir un nom', 'error'); return; }
-  const data = { name, desc: document.getElementById('mCatDesc').value.trim(), color: document.getElementById('mCatColor').value };
-  const cats = Store.get('categories');
-  if (id) { const idx = cats.findIndex(c => c.id === id); if (idx >= 0) cats[idx] = { ...cats[idx], ...data }; toast('Categorie modifiee'); }
-  else { cats.push({ id: nextId(cats), ...data }); toast('Categorie ajoutee'); }
-  Store.set('categories', cats); closeModal(); renderCategories();
+  const name=document.getElementById('mCatName').value.trim();if(!name){toast('Saisissez un nom','error');return;}
+  const data={name,desc:document.getElementById('mCatDesc').value.trim(),color:document.getElementById('mCatColor').value};
+  const cats=Store.get('categories');
+  if(id){const idx=cats.findIndex(c=>c.id===id);if(idx>=0)cats[idx]={...cats[idx],...data};toast('Categorie modifiee');}else{cats.push({id:nextId(cats),...data});toast('Categorie ajoutee');}
+  Store.set('categories',cats);closeModal();renderCategories();
 }
-
 function deleteCategory(id) {
-  const prods = Store.get('products').filter(p => p.catId === id).length;
-  if (prods > 0) { toast(`Impossible : ${prods} produit(s) dans cette categorie`, 'error'); return; }
-  openModal('Confirmer', '<p style="color:#8b949e">Supprimer cette categorie ?</p>',
-    `<button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
-     <button class="btn btn-danger" onclick="Store.set('categories',Store.get('categories').filter(c=>c.id!==${id}));closeModal();toast('Categorie supprimee','info');renderCategories();">Supprimer</button>`);
+  const n=Store.get('products').filter(p=>p.catId===id).length;
+  if(n>0){toast(`Impossible : ${n} produit(s) dans cette categorie`,'error');return;}
+  openModal('Confirmer','<p style="color:#8b949e">Supprimer cette categorie ?</p>',`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-danger" onclick="Store.set('categories',Store.get('categories').filter(c=>c.id!==${id}));closeModal();toast('Categorie supprimee','info');renderCategories();">Supprimer</button>`);
 }
 
 /* =====================================================
@@ -1174,91 +804,14 @@ function deleteCategory(id) {
    ===================================================== */
 let invFilter = '';
 function filterInventory(f) { invFilter = f; renderInventory(); }
-
 function renderInventory() {
-  const prods = Store.get('products');
-  const filtered = invFilter ? prods.filter(p => stockStatus(p.qty, p.min) === invFilter) : prods;
-  document.getElementById('inventoryGrid').innerHTML = filtered.length ? filtered.map(p => {
-    const st = stockStatus(p.qty, p.min);
-    const cat = getCat(p.catId);
-    const maxQty = Math.max(p.min * 3, p.qty, 1);
-    const pct = Math.min(100, (p.qty / maxQty) * 100);
-    const barColor = st === 'out' ? '#ef4444' : st === 'low' ? '#f59e0b' : '#22c55e';
-    return `<div class="stat-card">
-      <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:10px">
-        <div><div style="font-weight:700;font-size:.95rem;margin-bottom:2px">${p.name}</div><div style="font-size:.78rem;color:${cat.color}">${cat.name}</div></div>
-        ${statusBadge(st)}
-      </div>
-      <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:6px">
-        <span style="font-size:1.5rem;font-weight:700">${fmt(p.qty)}</span>
-        <span style="font-size:.78rem;color:#8b949e">/ min ${p.min}</span>
-      </div>
-      <div class="stock-bar"><div class="stock-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
-      <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:.78rem;color:#8b949e">
-        <span>Prix: ${fmtD(p.price)}</span><span>Valeur: ${fmtD(p.qty * p.price)}</span>
-      </div>
-    </div>`;
-  }).join('') : '<p style="color:#8b949e;text-align:center;padding:40px;grid-column:1/-1">Aucun produit dans cette categorie</p>';
+  const prods=Store.get('products');
+  const filtered=invFilter?prods.filter(p=>stockStatus(p.qty,p.min)===invFilter):prods;
+  document.getElementById('inventoryGrid').innerHTML=filtered.length?filtered.map(p=>{const st=stockStatus(p.qty,p.min);const cat=getCat(p.catId);const maxQ=Math.max(p.min*3,p.qty,1);const pct=Math.min(100,(p.qty/maxQ)*100);const bc=st==='out'?'#ef4444':st==='low'?'#f59e0b':'#22c55e';return `<div class="stat-card"><div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:10px"><div><div style="font-weight:700;font-size:.95rem;margin-bottom:2px">${p.name}</div><div style="font-size:.78rem;color:${cat.color}">${cat.name}</div></div>${statusBadge(st)}</div><div style="display:flex;align-items:baseline;gap:6px;margin-bottom:6px"><span style="font-size:1.5rem;font-weight:700">${fmt(p.qty)}</span><span style="font-size:.78rem;color:#8b949e">/ min ${p.min}</span></div><div class="stock-bar"><div class="stock-bar-fill" style="width:${pct}%;background:${bc}"></div></div><div style="display:flex;justify-content:space-between;margin-top:10px;font-size:.78rem;color:#8b949e"><span>Prix: ${fmtD(p.price)}</span><span>Valeur: ${fmtD(p.qty*p.price)}</span></div></div>`;}).join(''):'<p style="color:#8b949e;text-align:center;padding:40px;grid-column:1/-1">Aucun produit dans cette categorie</p>';
 }
 
 /* =====================================================
-   STATISTIQUES
-   ===================================================== */
-function renderStatistics() {
-  const prods = Store.get('products');
-  const cats = Store.get('categories');
-  const entries = Store.get('entries');
-  const exits = Store.get('exits');
-
-  const catValues = cats.map(c => prods.filter(p => p.catId === c.id).reduce((s, p) => s + p.qty * p.price, 0));
-  chartInstances.statBar = new Chart(document.getElementById('statBarChart').getContext('2d'), {
-    type:'bar',
-    data:{ labels:cats.map(c=>c.name), datasets:[{ label:'Valeur (DH)', data:catValues, backgroundColor:cats.map(c=>c.color+'99'), borderColor:cats.map(c=>c.color), borderWidth:1, borderRadius:6 }] },
-    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} }, scales:{ x:{ticks:{color:'#8b949e'},grid:{display:false}}, y:{ticks:{color:'#8b949e',callback:v=>fmt(v)+' DH'},grid:{color:'#1e2a3a'}} } }
-  });
-
-  const top5 = [...prods].sort((a,b) => (b.qty*b.price)-(a.qty*a.price)).slice(0,5);
-  chartInstances.statHBar = new Chart(document.getElementById('statHBarChart').getContext('2d'), {
-    type:'bar',
-    data:{ labels:top5.map(p=>p.name.length>25?p.name.slice(0,25)+'...':p.name), datasets:[{ label:'Valeur (DH)', data:top5.map(p=>p.qty*p.price), backgroundColor:'rgba(240,180,41,.5)', borderColor:'#f0b429', borderWidth:1, borderRadius:6 }] },
-    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} }, scales:{ x:{ticks:{color:'#8b949e',callback:v=>fmt(v)+' DH'},grid:{color:'#1e2a3a'}}, y:{ticks:{color:'#8b949e',font:{size:11}},grid:{display:false}} } }
-  });
-
-  const cumLabels = [], cumEntry = [], cumExit = [];
-  let ce = 0, cx = 0;
-  for (let d = 29; d >= 0; d--) {
-    const date = new Date(); date.setDate(date.getDate() - d);
-    const ds = date.toISOString().split('T')[0];
-    cumLabels.push(date.getDate() + '/' + (date.getMonth()+1));
-    ce += entries.filter(e => e.date === ds).reduce((s, e) => s + e.qty, 0);
-    cx += exits.filter(e => e.date === ds).reduce((s, e) => s + e.qty, 0);
-    cumEntry.push(ce); cumExit.push(cx);
-  }
-  chartInstances.statLine = new Chart(document.getElementById('statLineChart').getContext('2d'), {
-    type:'line',
-    data:{ labels:cumLabels, datasets:[
-      { label:'Entrees cumulees', data:cumEntry, borderColor:'#22c55e', backgroundColor:'rgba(34,197,94,.05)', fill:true, tension:.3, pointRadius:0, borderWidth:2 },
-      { label:'Sorties cumulees', data:cumExit, borderColor:'#ef4444', backgroundColor:'rgba(239,68,68,.05)', fill:true, tension:.3, pointRadius:0, borderWidth:2 },
-    ]},
-    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{color:'#8b949e',font:{family:'Space Grotesk',size:11}} } },
-      scales:{ x:{ticks:{color:'#4a5568',maxTicksLimit:8},grid:{color:'#1e2a3a'}}, y:{ticks:{color:'#4a5568'},grid:{color:'#1e2a3a'}} }, interaction:{intersect:false,mode:'index'} }
-  });
-
-  chartInstances.statScatter = new Chart(document.getElementById('statScatterChart').getContext('2d'), {
-    type:'scatter',
-    data:{ datasets: cats.map(c => ({
-      label:c.name, data:prods.filter(p=>p.catId===c.id).map(p=>({x:p.price,y:p.qty})),
-      backgroundColor:c.color+'aa', borderColor:c.color, borderWidth:1, pointRadius:7, pointHoverRadius:10
-    }))},
-    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{color:'#8b949e',font:{family:'Space Grotesk',size:11},usePointStyle:true,pointStyleWidth:8} },
-      tooltip:{ callbacks:{ label:ctx => `${ctx.raw.x} DH, ${ctx.raw.y} unites` } } },
-      scales:{ x:{title:{display:true,text:'Prix (DH)',color:'#8b949e'},ticks:{color:'#4a5568'},grid:{color:'#1e2a3a'}},
-               y:{title:{display:true,text:'Quantite',color:'#8b949e'},ticks:{color:'#4a5568'},grid:{color:'#1e2a3a'}} } }
-  });
-}
-
-/* =====================================================
-   RACCOURCI CLAVIER + INIT
+   INITIALISATION
    ===================================================== */
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 navigate('dashboard');
