@@ -307,7 +307,7 @@ const Store = {
   set(k, v) { localStorage.setItem('gs_' + k, JSON.stringify(v)); },
 };
 
-/* Données initiales réalistes */
+/* Données initiales — entrées et sorties VIDES */
 const SEED = {
   categories: [
     { id:1, name:'Alimentation', desc:'Produits alimentaires de base', color:'#f0b429' },
@@ -342,35 +342,20 @@ const SEED = {
   exits: [],
 };
 
-/* Générer l'historique fictif sur 30 jours */
-(function seedHistory() {
-  const prods = SEED.products;
-  for (let d = 30; d >= 1; d--) {
-    const date = new Date(); date.setDate(date.getDate() - d);
-    const ds = date.toISOString().split('T')[0];
-    for (let i = 0, n = 1 + Math.floor(Math.random() * 3); i < n; i++) {
-      const p = prods[Math.floor(Math.random() * prods.length)];
-      SEED.entries.push({ id: SEED.entries.length + 1, prodId: p.id, qty: 10 + Math.floor(Math.random() * 50), date: ds, note: '' });
-    }
-    for (let i = 0, n = 1 + Math.floor(Math.random() * 2); i < n; i++) {
-      const p = prods[Math.floor(Math.random() * prods.length)];
-      SEED.exits.push({ id: SEED.exits.length + 1, prodId: p.id, qty: 5 + Math.floor(Math.random() * 30), date: ds, note: '' });
-    }
-  }
-})();
-
 /* =====================================================
-   INITIALISATION - Le flag empêche le re-semage
+   INITIALISATION — Versionnage pour forcer le re-seed
+   Le numero de version change → toutes les données sont
+   rechargees depuis SEED (y compris entrées/sorties vides)
    ===================================================== */
+const APP_VERSION = 3;
+
 function initData() {
-  /* Le flag gs_initialized est posé UNE SEULE FOIS au premier lancement.
-     Après ça, même si un tableau est vide (après suppression totale),
-     les données NE seront JAMAIS réinjectées. */
-  if (localStorage.getItem('gs_initialized') !== 'true') {
+  if (localStorage.getItem('gs_version') !== String(APP_VERSION)) {
+    /* Version différente ou première visite → on réécrit tout */
     ['categories','suppliers','products','entries','exits'].forEach(k => {
       Store.set(k, SEED[k]);
     });
-    localStorage.setItem('gs_initialized', 'true');
+    localStorage.setItem('gs_version', String(APP_VERSION));
   }
 }
 initData();
@@ -603,7 +588,7 @@ function exportToExcel() {
 }
 
 /* =====================================================
-   ROUTEUR (sans Statistiques)
+   ROUTEUR
    ===================================================== */
 const PAGE_TITLES = {
   dashboard:'Tableau de bord', products:'Produits', entries:'Entrees de stock',
@@ -655,23 +640,26 @@ function renderDashboard() {
   const al = prods.filter(p=>stockStatus(p.qty,p.min)==='low').length;
   const ru = prods.filter(p=>stockStatus(p.qty,p.min)==='out').length;
   const cards = [
-    { label:'Total Produits', value:fmt(prods.length), icon:'fa-boxes-stacked', color:'#f0b429', bg:'rgba(240,180,41,.12)', trend:'+3 ce mois', up:true },
-    { label:'Valeur du Stock', value:fmtD(tv), icon:'fa-coins', color:'#22c55e', bg:'rgba(34,197,94,.12)', trend:'+12% vs mois dernier', up:true },
-    { label:'Alertes Stock Faible', value:fmt(al), icon:'fa-triangle-exclamation', color:'#f59e0b', bg:'rgba(245,158,11,.12)', trend:'Necessitent attention', up:false },
-    { label:'Ruptures de Stock', value:fmt(ru), icon:'fa-circle-xmark', color:'#ef4444', bg:'rgba(239,68,68,.12)', trend:'Commandes urgentes', up:false },
+    { label:'Total Produits', value:fmt(prods.length), icon:'fa-boxes-stacked', color:'#f0b429', bg:'rgba(240,180,41,.12)', trend:prods.length+' produit(s)', up:true },
+    { label:'Valeur du Stock', value:fmtD(tv), icon:'fa-coins', color:'#22c55e', bg:'rgba(34,197,94,.12)', trend:'Valeur totale', up:true },
+    { label:'Alertes Stock Faible', value:fmt(al), icon:'fa-triangle-exclamation', color:'#f59e0b', bg:'rgba(245,158,11,.12)', trend:al?'Necessitent attention':'Aucune alerte', up:false },
+    { label:'Ruptures de Stock', value:fmt(ru), icon:'fa-circle-xmark', color:'#ef4444', bg:'rgba(239,68,68,.12)', trend:ru?'Commandes urgentes':'Aucune rupture', up:false },
   ];
   document.getElementById('statCards').innerHTML = cards.map(c => `<div class="stat-card"><div class="icon-wrap" style="background:${c.bg};color:${c.color}"><i class="fa-solid ${c.icon}"></i></div><div class="label">${c.label}</div><div class="value" style="animation:countUp .4s ease">${c.value}</div><div class="trend" style="color:${c.up?'#22c55e':c.color}"><i class="fa-solid ${c.up?'fa-arrow-trend-up':'fa-info-circle'}" style="font-size:.65rem"></i> ${c.trend}</div></div>`).join('');
 
+  /* Graphique linéaire : 30 derniers jours */
   const labels=[],entryData=[],exitData=[];
   for(let d=29;d>=0;d--){const date=new Date();date.setDate(date.getDate()-d);const ds=date.toISOString().split('T')[0];labels.push(date.getDate()+'/'+(date.getMonth()+1));entryData.push(Store.get('entries').filter(e=>e.date===ds).reduce((s,e)=>s+e.qty,0));exitData.push(Store.get('exits').filter(e=>e.date===ds).reduce((s,e)=>s+e.qty,0));}
   chartInstances.dash = new Chart(document.getElementById('dashChart').getContext('2d'),{type:'line',data:{labels,datasets:[{label:'Entrees',data:entryData,borderColor:'#22c55e',backgroundColor:'rgba(34,197,94,.08)',fill:true,tension:.4,pointRadius:0,borderWidth:2},{label:'Sorties',data:exitData,borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,.08)',fill:true,tension:.4,pointRadius:0,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b949e',font:{family:'Space Grotesk',size:12}}}},scales:{x:{ticks:{color:'#4a5568',font:{size:10},maxTicksLimit:10},grid:{color:'#1e2a3a'}},y:{ticks:{color:'#4a5568',font:{size:10}},grid:{color:'#1e2a3a'},beginAtZero:true}},interaction:{intersect:false,mode:'index'}}});
 
+  /* Doughnut par catégorie */
   const cats=Store.get('categories');
   const catData=cats.map(c=>prods.filter(p=>p.catId===c.id).reduce((s,p)=>s+p.qty,0));
   chartInstances.doughnut = new Chart(document.getElementById('dashDoughnut').getContext('2d'),{type:'doughnut',data:{labels:cats.map(c=>c.name),datasets:[{data:catData,backgroundColor:cats.map(c=>c.color),borderWidth:0,hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'bottom',labels:{color:'#8b949e',font:{family:'Space Grotesk',size:11},padding:12,usePointStyle:true,pointStyleWidth:8}}}}});
 
+  /* Activité récente */
   const allMoves=[...Store.get('entries').slice(-5).map(e=>({...e,type:'entry'})),...Store.get('exits').slice(-5).map(e=>({...e,type:'exit'}))].sort((a,b)=>b.id-a.id).slice(0,8);
-  document.getElementById('recentActivity').innerHTML = allMoves.length ? `<table class="data-table"><thead><tr><th>Type</th><th>Produit</th><th>Quantite</th><th>Date</th></tr></thead><tbody>${allMoves.map(m=>{const p=getProd(m.prodId);return `<tr><td>${m.type==='entry'?'<span class="badge badge-green"><i class="fa-solid fa-arrow-down"></i> Entree</span>':'<span class="badge badge-red"><i class="fa-solid fa-arrow-up"></i> Sortie</span>'}</td><td>${p.name}</td><td style="font-weight:600">${m.type==='entry'?'+':'-'}${m.qty}</td><td style="color:#8b949e">${m.date}</td></tr>`;}).join('')}</tbody></table>` : '<p style="color:#8b949e;padding:20px;text-align:center">Aucune activite</p>';
+  document.getElementById('recentActivity').innerHTML = allMoves.length ? `<table class="data-table"><thead><tr><th>Type</th><th>Produit</th><th>Quantite</th><th>Date</th></tr></thead><tbody>${allMoves.map(m=>{const p=getProd(m.prodId);return `<tr><td>${m.type==='entry'?'<span class="badge badge-green"><i class="fa-solid fa-arrow-down"></i> Entree</span>':'<span class="badge badge-red"><i class="fa-solid fa-arrow-up"></i> Sortie</span>'}</td><td>${p.name}</td><td style="font-weight:600">${m.type==='entry'?'+':'-'}${m.qty}</td><td style="color:#8b949e">${m.date}</td></tr>`;}).join('')}</tbody></table>` : '<p style="color:#8b949e;padding:40px 20px;text-align:center"><i class="fa-solid fa-inbox" style="font-size:1.5rem;display:block;margin-bottom:8px;opacity:.4"></i>Aucune activite enregistree pour le moment.<br><span style="font-size:.78rem">Les entrees et sorties apparaitront ici une fois ajoutees.</span></p>';
 }
 
 /* =====================================================
@@ -721,7 +709,7 @@ function renderEntries() {
   document.getElementById('entryProduct').innerHTML=prods.map(p=>`<option value="${p.id}">${p.name} (stock: ${p.qty})</option>`).join('');
   document.getElementById('entryDate').value=today();
   const entries=Store.get('entries').sort((a,b)=>b.id-a.id).slice(0,50);
-  document.getElementById('entriesBody').innerHTML=entries.length?entries.map(e=>{const p=getProd(e.prodId);return `<tr><td style="color:#8b949e">${e.date}</td><td style="font-weight:500">${p.name}</td><td style="color:#22c55e;font-weight:600">+${e.qty}</td><td style="color:#8b949e">${e.note||'-'}</td></tr>`;}).join(''):'<tr><td colspan="4" style="text-align:center;color:#8b949e;padding:32px">Aucune entree</td></tr>';
+  document.getElementById('entriesBody').innerHTML=entries.length?entries.map(e=>{const p=getProd(e.prodId);return `<tr><td style="color:#8b949e">${e.date}</td><td style="font-weight:500">${p.name}</td><td style="color:#22c55e;font-weight:600">+${e.qty}</td><td style="color:#8b949e">${e.note||'-'}</td></tr>`;}).join(''):'<tr><td colspan="4" style="text-align:center;color:#8b949e;padding:40px"><i class="fa-solid fa-arrow-down" style="font-size:1.5rem;display:block;margin-bottom:8px;opacity:.3"></i>Aucune entree enregistree</td></tr>';
 }
 function addEntry() {
   const prodId=+document.getElementById('entryProduct').value,qty=+document.getElementById('entryQty').value,date=document.getElementById('entryDate').value,note=document.getElementById('entryNote').value.trim();
@@ -739,7 +727,7 @@ function renderExits() {
   document.getElementById('exitProduct').innerHTML=prods.map(p=>`<option value="${p.id}">${p.name} (stock: ${p.qty})</option>`).join('');
   document.getElementById('exitDate').value=today();
   const exits=Store.get('exits').sort((a,b)=>b.id-a.id).slice(0,50);
-  document.getElementById('exitsBody').innerHTML=exits.length?exits.map(e=>{const p=getProd(e.prodId);return `<tr><td style="color:#8b949e">${e.date}</td><td style="font-weight:500">${p.name}</td><td style="color:#ef4444;font-weight:600">-${e.qty}</td><td style="color:#8b949e">${e.note||'-'}</td></tr>`;}).join(''):'<tr><td colspan="4" style="text-align:center;color:#8b949e;padding:32px">Aucune sortie</td></tr>';
+  document.getElementById('exitsBody').innerHTML=exits.length?exits.map(e=>{const p=getProd(e.prodId);return `<tr><td style="color:#8b949e">${e.date}</td><td style="font-weight:500">${p.name}</td><td style="color:#ef4444;font-weight:600">-${e.qty}</td><td style="color:#8b949e">${e.note||'-'}</td></tr>`;}).join(''):'<tr><td colspan="4" style="text-align:center;color:#8b949e;padding:40px"><i class="fa-solid fa-arrow-up" style="font-size:1.5rem;display:block;margin-bottom:8px;opacity:.3"></i>Aucune sortie enregistree</td></tr>';
 }
 function addExit() {
   const prodId=+document.getElementById('exitProduct').value,qty=+document.getElementById('exitQty').value,date=document.getElementById('exitDate').value,note=document.getElementById('exitNote').value.trim();
@@ -811,7 +799,7 @@ function renderInventory() {
 }
 
 /* =====================================================
-   INITIALISATION
+   DEMARRAGE
    ===================================================== */
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 navigate('dashboard');
