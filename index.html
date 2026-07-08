@@ -7,7 +7,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family+Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script>
 tailwind.config={theme:{extend:{colors:{sb:'#0d1117',mn:'#131920',cd:'#1a2232',cdH:'#212d40',bd:'#2a3444',ac:'#f0b429',acD:'#c99a1f',sc:'#22c55e',dg:'#ef4444',wn:'#f59e0b',tp:'#f1f5f9',ts:'#8b949e'},fontFamily:{h:['Space Grotesk','sans-serif']}}}}
 </script>
@@ -109,6 +109,20 @@ select.form-input{appearance:none;cursor:pointer}
 .preview-table th{padding:8px 10px;background:#131920;color:#8b949e;text-align:left;position:sticky;top:0;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
 .preview-table td{padding:7px 10px;border-top:1px solid #1e2a3a;color:#c9d1d9}
 .preview-table tr:hover td{background:#212d40}
+.empty-state{text-align:center;padding:48px 20px;color:#8b949e}
+.empty-state i{font-size:2.5rem;display:block;margin-bottom:14px;opacity:.3}
+.empty-state p{font-size:.9rem;margin-bottom:4px}
+.empty-state .hint{font-size:.78rem;opacity:.7}
+.onboard-card{background:#1a2232;border:1px solid #2a3444;border-radius:12px;padding:24px;display:flex;align-items:center;gap:16px;transition:all .25s ease;cursor:pointer}
+.onboard-card:hover{border-color:#f0b429;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.onboard-card .onboard-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+.onboard-card .onboard-title{font-weight:600;font-size:.95rem;color:#f1f5f9;margin-bottom:4px}
+.onboard-card .onboard-desc{font-size:.8rem;color:#8b949e;line-height:1.4}
+.cat-card{background:#1a2232;border:1px solid #2a3444;border-radius:12px;padding:20px;transition:all .25s ease;position:relative;overflow:hidden}
+.cat-card:hover{border-color:#3a4a5e;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.cat-card .cat-color{width:40px;height:40px;border-radius:10px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-size:1rem}
+.inv-card{background:#1a2232;border:1px solid #2a3444;border-radius:12px;padding:18px;transition:all .25s ease}
+.inv-card:hover{border-color:#3a4a5e;transform:translateY(-1px)}
 </style>
 </head>
 <body>
@@ -153,7 +167,8 @@ select.form-input{appearance:none;cursor:pointer}
     <!-- Tableau de bord -->
     <div class="page active" id="page-dashboard">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8" id="statCards"></div>
-      <div class="chart-wrap">
+      <div id="onboardSection"></div>
+      <div class="chart-wrap" id="recentActivityWrap">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
           <h3 style="font-size:.95rem;font-weight:600;color:#8b949e">ACTIVITE RECENTE</h3>
         </div>
@@ -288,54 +303,33 @@ select.form-input{appearance:none;cursor:pointer}
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
+/* ===== Stockage local ===== */
 const Store = {
   get(k) { try { return JSON.parse(localStorage.getItem('gs_' + k)) || []; } catch { return []; } },
   set(k, v) { localStorage.setItem('gs_' + k, JSON.stringify(v)); },
 };
 
+/* ===== Donnees initiales VIDES ===== */
 const SEED = {
-  categories: [
-    { id:1, name:'Alimentation', desc:'Produits alimentaires de base', color:'#f0b429' },
-    { id:2, name:'Boissons', desc:'Boissons chaudes et froides', color:'#22c55e' },
-    { id:3, name:'Hygiene', desc:'Produits d\'hygiene et soin', color:'#3b82f6' },
-    { id:4, name:'Epicerie', desc:'Produits d\'epicerie fine', color:'#a855f7' },
-  ],
-  suppliers: [
-    { id:1, name:'Societe Marocaine d\'Huiles (SMH)', phone:'0522-123456', email:'contact@smh.ma' },
-    { id:2, name:'Copag', phone:'0523-654321', email:'info@copag.ma' },
-    { id:3, name:'Centrale Laitiere', phone:'0522-987654', email:'service@centralelaitiere.ma' },
-    { id:4, name:'Cosmamar', phone:'0524-111222', email:'contact@cosmamar.ma' },
-  ],
-  products: [
-    { id:1, name:'Huile d\'olive extra vierge 1L', catId:1, qty:120, price:85, min:20, supId:1 },
-    { id:2, name:'Semoule fine 5kg', catId:1, qty:340, price:32, min:50, supId:1 },
-    { id:3, name:'Lait UHT 1L x12', catId:2, qty:85, price:78, min:30, supId:3 },
-    { id:4, name:'Sucre blanc 1kg', catId:1, qty:520, price:8.5, min:100, supId:2 },
-    { id:5, name:'Cafe moulu 250g', catId:2, qty:8, price:45, min:15, supId:2 },
-    { id:6, name:'Farine de ble T55 25kg', catId:1, qty:45, price:195, min:10, supId:1 },
-    { id:7, name:'Riz basmati 5kg', catId:1, qty:0, price:65, min:20, supId:2 },
-    { id:8, name:'Savon artisanal 100g', catId:3, qty:200, price:12, min:40, supId:4 },
-    { id:9, name:'Eau minerale 1.5L x6', catId:2, qty:3, price:18, min:25, supId:3 },
-    { id:10, name:'Conserves de sardines x12', catId:4, qty:95, price:55, min:15, supId:2 },
-    { id:11, name:'Miel de montagne 500g', catId:4, qty:30, price:120, min:10, supId:1 },
-    { id:12, name:'Gel douche 750ml', catId:3, qty:0, price:35, min:20, supId:4 },
-    { id:13, name:'The vert menthe 200g', catId:2, qty:150, price:28, min:30, supId:2 },
-    { id:14, name:'Pates alimentaires 500g', catId:1, qty:280, price:6.5, min:50, supId:1 },
-    { id:15, name:'Dentifrice 75ml', catId:3, qty:5, price:22, min:15, supId:4 },
-  ],
+  categories: [],
+  suppliers: [],
+  products: [],
   entries: [],
   exits: [],
 };
 
-const APP_VERSION = 4;
+/* Version pour forcer la reinitialisation si besoin */
+const APP_VERSION = 5;
 function initData() {
   if (localStorage.getItem('gs_version') !== String(APP_VERSION)) {
+    /* Supprimer anciennes donnees pour repartir a zero */
     ['categories','suppliers','products','entries','exits'].forEach(k => { Store.set(k, SEED[k]); });
     localStorage.setItem('gs_version', String(APP_VERSION));
   }
 }
 initData();
 
+/* ===== Utilitaires ===== */
 function getCat(id) { return Store.get('categories').find(c => c.id === id) || { name:'-', color:'#666' }; }
 function getSup(id) { return Store.get('suppliers').find(s => s.id === id) || { name:'-' }; }
 function getProd(id) { return Store.get('products').find(p => p.id === id) || { name:'-' }; }
@@ -350,6 +344,10 @@ function statusBadge(st) {
 }
 function today() { return new Date().toISOString().split('T')[0]; }
 
+/* Palette de couleurs pour les categories */
+const CAT_COLORS = ['#f0b429','#22c55e','#3b82f6','#a855f7','#ef4444','#ec4899','#14b8a6','#f97316','#6366f1','#84cc16'];
+
+/* ===== Toast ===== */
 function toast(msg, type = 'success') {
   const c = document.getElementById('toastContainer');
   const icons = { success:'fa-circle-check', error:'fa-circle-xmark', info:'fa-circle-info' };
@@ -360,6 +358,7 @@ function toast(msg, type = 'success') {
   setTimeout(() => { el.style.opacity='0'; el.style.transform='translateX(60px)'; el.style.transition='all .3s ease'; setTimeout(()=>el.remove(),300); }, 3000);
 }
 
+/* ===== Modal ===== */
 function openModal(title, bodyHTML, footerHTML) {
   document.getElementById('modalTitle').textContent = title;
   document.getElementById('modalBody').innerHTML = bodyHTML;
@@ -369,6 +368,7 @@ function openModal(title, bodyHTML, footerHTML) {
 function closeModal() { document.getElementById('modal').classList.remove('show'); }
 document.getElementById('modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
 
+/* ===== Selection multiple ===== */
 let selectedIds = new Set();
 function toggleSelect(id) { if (selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id); updateSelectionUI(); }
 function toggleSelectAll() {
@@ -384,7 +384,7 @@ function updateSelectionUI() {
   const vis = getFilteredProducts(); const allSel = vis.length > 0 && vis.every(p => selectedIds.has(p.id));
   if (selectedIds.size > 0) { bar.classList.add('show'); count.textContent = selectedIds.size; label.textContent = selectedIds.size + ' selectionne(s)'; }
   else { bar.classList.remove('show'); label.textContent = 'Tout selectionner'; }
-  cb.className = 'custom-cb' + (allSel ? ' checked' : '');
+  if (cb) cb.className = 'custom-cb' + (allSel ? ' checked' : '');
 }
 function getFilteredProducts() {
   const prods = Store.get('products');
@@ -392,7 +392,6 @@ function getFilteredProducts() {
   const catF = document.getElementById('productCatFilter')?.value || '';
   return prods.filter(p => p.name.toLowerCase().includes(q) && (!catF || p.catId === +catF));
 }
-
 function bulkDelete() {
   const n = selectedIds.size; if (!n) return;
   openModal('Confirmer la suppression multiple',
@@ -404,10 +403,10 @@ function confirmBulkDelete() {
   const n = selectedIds.size; selectedIds.clear(); closeModal(); toast(`${n} produit(s) supprime(s)`, 'info'); updateSelectionUI(); renderProducts();
 }
 
-/* Import / Export Excel */
+/* ===== Import / Export Excel ===== */
 function downloadTemplate() {
   const cats = Store.get('categories'); const sups = Store.get('suppliers');
-  const wsData = [['Nom du produit','Categorie','Quantite','Prix (DH)','Stock minimum','Fournisseur'],['Huile d\'olive 1L',cats[0]?.name||'Alimentation',100,85,20,sups[0]?.name||'Fournisseur 1']];
+  const wsData = [['Nom du produit','Categorie','Quantite','Prix (DH)','Stock minimum','Fournisseur'],['Exemple : Huile d\'olive 1L',cats[0]?.name||'Votre categorie',100,85,20,sups[0]?.name||'Votre fournisseur']];
   const ws = XLSX.utils.aoa_to_sheet(wsData);
   ws['!cols'] = [{wch:30},{wch:18},{wch:12},{wch:12},{wch:15},{wch:30}];
   const wb = XLSX.utils.book_new();
@@ -535,7 +534,7 @@ function exportToExcel() {
   toast(`${prods.length} produit(s) exporte(s)`);
 }
 
-/* Routeur */
+/* ===== Routeur ===== */
 const PAGE_TITLES = { dashboard:'Tableau de bord', products:'Produits', entries:'Entrees de stock', exits:'Sorties de stock', suppliers:'Fournisseurs', categories:'Categories', inventory:'Inventaire' };
 let currentPage = 'dashboard';
 
@@ -572,9 +571,11 @@ function handleGlobalSearch(q) {
   if (currentPage === 'products') { document.getElementById('productSearch').value = q; renderProducts(); }
 }
 
-/* Dashboard */
+/* ===== Dashboard ===== */
 function renderDashboard() {
   const prods = Store.get('products');
+  const cats = Store.get('categories');
+  const sups = Store.get('suppliers');
   const tv = prods.reduce((s,p)=>s+p.qty*p.price,0);
   const al = prods.filter(p=>stockStatus(p.qty,p.min)==='low').length;
   const ru = prods.filter(p=>stockStatus(p.qty,p.min)==='out').length;
@@ -586,36 +587,75 @@ function renderDashboard() {
   ];
   document.getElementById('statCards').innerHTML = cards.map(c => `<div class="stat-card"><div class="icon-wrap" style="background:${c.bg};color:${c.color}"><i class="fa-solid ${c.icon}"></i></div><div class="label">${c.label}</div><div class="value" style="animation:countUp .4s ease">${c.value}</div><div class="trend" style="color:${c.up?'#22c55e':c.color}"><i class="fa-solid ${c.up?'fa-arrow-trend-up':'fa-info-circle'}" style="font-size:.65rem"></i> ${c.trend}</div></div>`).join('');
 
+  /* Section d'accueil quand tout est vide */
+  const onboard = document.getElementById('onboardSection');
+  if (!prods.length && !cats.length && !sups.length) {
+    onboard.innerHTML = `
+      <div style="margin-bottom:20px">
+        <h3 style="font-size:1.05rem;font-weight:700;color:#f1f5f9;margin-bottom:6px">Bienvenue dans GestionStock Pro</h3>
+        <p style="color:#8b949e;font-size:.88rem">Pour commencer, configurez vos donnees de base en suivant ces etapes :</p>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div class="onboard-card" onclick="navigate('categories')">
+          <div class="onboard-icon" style="background:rgba(240,180,41,.12);color:#f0b429"><i class="fa-solid fa-tags"></i></div>
+          <div><div class="onboard-title">1. Creer des categories</div><div class="onboard-desc">Organisez vos produits par categorie (Alimentation, Boissons, etc.)</div></div>
+        </div>
+        <div class="onboard-card" onclick="navigate('suppliers')">
+          <div class="onboard-icon" style="background:rgba(34,197,94,.12);color:#22c55e"><i class="fa-solid fa-truck-field"></i></div>
+          <div><div class="onboard-title">2. Ajouter des fournisseurs</div><div class="onboard-desc">Enregistrez les informations de vos fournisseurs</div></div>
+        </div>
+        <div class="onboard-card" onclick="navigate('products')">
+          <div class="onboard-icon" style="background:rgba(59,130,246,.12);color:#3b82f6"><i class="fa-solid fa-boxes-stacked"></i></div>
+          <div><div class="onboard-title">3. Saisir vos produits</div><div class="onboard-desc">Ajoutez vos articles manuellement ou via import Excel</div></div>
+        </div>
+      </div>`;
+  } else {
+    onboard.innerHTML = '';
+  }
+
+  /* Activite recente */
   const allMoves=[...Store.get('entries').slice(-5).map(e=>({...e,type:'entry'})),...Store.get('exits').slice(-5).map(e=>({...e,type:'exit'}))].sort((a,b)=>b.id-a.id).slice(0,8);
-  document.getElementById('recentActivity').innerHTML = allMoves.length ? `<table class="data-table"><thead><tr><th>Type</th><th>Produit</th><th>Quantite</th><th>Date</th></tr></thead><tbody>${allMoves.map(m=>{const p=getProd(m.prodId);return `<tr><td>${m.type==='entry'?'<span class="badge badge-green"><i class="fa-solid fa-arrow-down"></i> Entree</span>':'<span class="badge badge-red"><i class="fa-solid fa-arrow-up"></i> Sortie</span>'}</td><td>${p.name}</td><td style="font-weight:600">${m.type==='entry'?'+':'-'}${m.qty}</td><td style="color:#8b949e">${m.date}</td></tr>`;}).join('')}</tbody></table>` : '<p style="color:#8b949e;padding:40px 20px;text-align:center"><i class="fa-solid fa-inbox" style="font-size:1.5rem;display:block;margin-bottom:8px;opacity:.4"></i>Aucune activite enregistree pour le moment.<br><span style="font-size:.78rem">Les entrees et sorties apparaitront ici une fois ajoutees.</span></p>';
+  document.getElementById('recentActivity').innerHTML = allMoves.length ? `<table class="data-table"><thead><tr><th>Type</th><th>Produit</th><th>Quantite</th><th>Date</th></tr></thead><tbody>${allMoves.map(m=>{const p=getProd(m.prodId);return `<tr><td>${m.type==='entry'?'<span class="badge badge-green"><i class="fa-solid fa-arrow-down"></i> Entree</span>':'<span class="badge badge-red"><i class="fa-solid fa-arrow-up"></i> Sortie</span>'}</td><td>${p.name}</td><td style="font-weight:600">${m.type==='entry'?'+':'-'}${m.qty}</td><td style="color:#8b949e">${m.date}</td></tr>`;}).join('')}</tbody></table>` : '<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>Aucune activite enregistree</p><p class="hint">Les entrees et sorties apparaitront ici une fois ajoutees.</p></div>';
 }
 
-/* Produits */
+/* ===== Produits ===== */
 function renderProducts() {
   const prods = Store.get('products'); const cats = Store.get('categories');
   const q = (document.getElementById('productSearch')?.value||'').toLowerCase();
   const catF = document.getElementById('productCatFilter')?.value||'';
+  /* Repeupler le select des categories */
   const sel = document.getElementById('productCatFilter');
-  if (sel && sel.options.length <= 1) cats.forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = c.name; sel.appendChild(o); });
+  if (sel) {
+    const currentVal = sel.value;
+    sel.innerHTML = '<option value="">Toutes categories</option>';
+    cats.forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = c.name; sel.appendChild(o); });
+    sel.value = currentVal;
+  }
   const filtered = prods.filter(p => p.name.toLowerCase().includes(q) && (!catF || p.catId === +catF));
   const allSel = filtered.length > 0 && filtered.every(p => selectedIds.has(p.id));
   const cb = document.getElementById('selectAllCb'); if (cb) cb.className = 'custom-cb'+(allSel?' checked':'');
   document.querySelector('#productsTable tbody').innerHTML = filtered.length ? filtered.map(p => {
     const cat=getCat(p.catId); const st=stockStatus(p.qty,p.min); const ck=selectedIds.has(p.id);
     return `<tr class="${ck?'selected-row':''}"><td><div class="custom-cb ${ck?'checked':''}" onclick="toggleSelect(${p.id});renderProducts()"></div></td><td style="font-weight:600">${p.name}</td><td><span style="color:${cat.color}">${cat.name}</span></td><td>${fmt(p.qty)}</td><td>${fmtD(p.price)}</td><td style="font-weight:600">${fmtD(p.qty*p.price)}</td><td>${statusBadge(st)}</td><td><div style="display:flex;gap:6px"><button class="btn btn-sm btn-secondary btn-icon" onclick="openProductModal(${p.id})"><i class="fa-solid fa-pen-to-square"></i></button><button class="btn btn-sm btn-danger btn-icon" onclick="deleteProduct(${p.id})"><i class="fa-solid fa-trash"></i></button></div></td></tr>`;
-  }).join('') : '<tr><td colspan="8" style="text-align:center;color:#8b949e;padding:32px">Aucun produit trouve</td></tr>';
+  }).join('') : '<tr><td colspan="8"><div class="empty-state"><i class="fa-solid fa-box-open"></i><p>Aucun produit pour le moment</p><p class="hint">Cliquez sur "Ajouter" pour saisir votre premier article, ou utilisez "Importer Excel" pour un chargement rapide.</p></div></td></tr>';
   updateSelectionUI();
 }
 
 function openProductModal(id) {
   const cats=Store.get('categories'); const sups=Store.get('suppliers');
-  const p = id ? getProd(id) : { name:'', catId:cats[0]?.id||'', qty:0, price:0, min:5, supId:sups[0]?.id||'' };
-  openModal(id?'Modifier le produit':'Ajouter un produit',`<div style="display:flex;flex-direction:column;gap:14px"><div><label class="form-label">Nom du produit</label><input type="text" class="form-input" id="mProdName" value="${p.name}"></div><div class="grid grid-cols-2 gap-3"><div><label class="form-label">Categorie</label><select class="form-input" id="mProdCat">${cats.map(c=>`<option value="${c.id}" ${c.id===p.catId?'selected':''}>${c.name}</option>`).join('')}</select></div><div><label class="form-label">Fournisseur</label><select class="form-input" id="mProdSup">${sups.map(s=>`<option value="${s.id}" ${s.id===p.supId?'selected':''}>${s.name}</option>`).join('')}</select></div></div><div class="grid grid-cols-3 gap-3"><div><label class="form-label">Quantite</label><input type="number" class="form-input" id="mProdQty" value="${p.qty}" min="0"></div><div><label class="form-label">Prix (DH)</label><input type="number" class="form-input" id="mProdPrice" value="${p.price}" min="0" step="0.5"></div><div><label class="form-label">Stock min</label><input type="number" class="form-input" id="mProdMin" value="${p.min}" min="0"></div></div></div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="saveProduct(${id||0})">${id?'Enregistrer':'Ajouter'}</button>`);
+  if (!cats.length || !sups.length) {
+    toast('Veuillez d\'abord ajouter au moins une categorie et un fournisseur', 'error');
+    return;
+  }
+  const p = id ? getProd(id) : { name:'', catId:cats[0].id, qty:0, price:0, min:5, supId:sups[0].id };
+  openModal(id?'Modifier le produit':'Ajouter un produit',`<div style="display:flex;flex-direction:column;gap:14px"><div><label class="form-label">Nom du produit</label><input type="text" class="form-input" id="mProdName" value="${p.name}" placeholder="Ex : Huile d'olive 1L"></div><div class="grid grid-cols-2 gap-3"><div><label class="form-label">Categorie</label><select class="form-input" id="mProdCat">${cats.map(c=>`<option value="${c.id}" ${c.id===p.catId?'selected':''}>${c.name}</option>`).join('')}</select></div><div><label class="form-label">Fournisseur</label><select class="form-input" id="mProdSup">${sups.map(s=>`<option value="${s.id}" ${s.id===p.supId?'selected':''}>${s.name}</option>`).join('')}</select></div></div><div class="grid grid-cols-3 gap-3"><div><label class="form-label">Quantite</label><input type="number" class="form-input" id="mProdQty" value="${p.qty}" min="0"></div><div><label class="form-label">Prix (DH)</label><input type="number" class="form-input" id="mProdPrice" value="${p.price}" min="0" step="0.5"></div><div><label class="form-label">Stock min</label><input type="number" class="form-input" id="mProdMin" value="${p.min}" min="0"></div></div></div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="saveProduct(${id||0})">${id?'Enregistrer':'Ajouter'}</button>`);
+  /* Focus sur le nom */
+  setTimeout(()=>{const el=document.getElementById('mProdName');if(el)el.focus();},100);
 }
 
 function saveProduct(id) {
   const name=document.getElementById('mProdName').value.trim();
-  if(!name){toast('Veuillez saisir un nom','error');return;}
+  if(!name){toast('Veuillez saisir un nom de produit','error');return;}
   const data={name,catId:+document.getElementById('mProdCat').value,supId:+document.getElementById('mProdSup').value,qty:Math.max(0,+document.getElementById('mProdQty').value||0),price:Math.max(0,+document.getElementById('mProdPrice').value||0),min:Math.max(0,+document.getElementById('mProdMin').value||0)};
   const prods=Store.get('products');
   if(id){const idx=prods.findIndex(p=>p.id===id);if(idx>=0)prods[idx]={...prods[idx],...data};toast('Produit modifie');}else{prods.push({id:nextId(prods),...data});toast('Produit ajoute');}
@@ -627,94 +667,151 @@ function deleteProduct(id) {
   openModal('Confirmer la suppression',`<div style="text-align:center;padding:10px 0"><i class="fa-solid fa-triangle-exclamation" style="font-size:2.5rem;color:#ef4444;margin-bottom:12px"></i><p style="color:#f1f5f9;font-size:1.05rem;font-weight:600;margin-bottom:6px">Supprimer ce produit ?</p><p style="color:#8b949e;font-size:.85rem">${p.name}</p></div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-danger" onclick="Store.set('products',Store.get('products').filter(p=>p.id!==${id}));closeModal();toast('Produit supprime','info');renderProducts();"><i class="fa-solid fa-trash"></i> Supprimer</button>`);
 }
 
-/* Entrees */
+/* ===== Entrees ===== */
 function renderEntries() {
   const prods=Store.get('products');
-  document.getElementById('entryProduct').innerHTML=prods.map(p=>`<option value="${p.id}">${p.name} (stock: ${p.qty})</option>`).join('');
+  const sel = document.getElementById('entryProduct');
+  if (prods.length) {
+    sel.innerHTML = prods.map(p=>`<option value="${p.id}">${p.name} (stock: ${p.qty})</option>`).join('');
+    sel.disabled = false;
+  } else {
+    sel.innerHTML = '<option value="">-- Aucun produit --</option>';
+    sel.disabled = true;
+  }
   document.getElementById('entryDate').value=today();
   const entries=Store.get('entries').sort((a,b)=>b.id-a.id).slice(0,50);
-  document.getElementById('entriesBody').innerHTML=entries.length?entries.map(e=>{const p=getProd(e.prodId);return `<tr><td style="color:#8b949e">${e.date}</td><td style="font-weight:500">${p.name}</td><td style="color:#22c55e;font-weight:600">+${e.qty}</td><td style="color:#8b949e">${e.note||'-'}</td></tr>`;}).join(''):'<tr><td colspan="4" style="text-align:center;color:#8b949e;padding:40px"><i class="fa-solid fa-arrow-down" style="font-size:1.5rem;display:block;margin-bottom:8px;opacity:.3"></i>Aucune entree enregistree</td></tr>';
+  document.getElementById('entriesBody').innerHTML=entries.length?entries.map(e=>{const p=getProd(e.prodId);return `<tr><td style="color:#8b949e">${e.date}</td><td style="font-weight:500">${p.name}</td><td style="color:#22c55e;font-weight:600">+${e.qty}</td><td style="color:#8b949e">${e.note||'-'}</td></tr>`;}).join(''):'<tr><td colspan="4"><div class="empty-state"><i class="fa-solid fa-arrow-down"></i><p>Aucune entree enregistree</p><p class="hint">Ajoutez d\'abord des produits, puis enregistrez vos entrees de stock.</p></div></td></tr>';
 }
 function addEntry() {
   const prodId=+document.getElementById('entryProduct').value,qty=+document.getElementById('entryQty').value,date=document.getElementById('entryDate').value,note=document.getElementById('entryNote').value.trim();
-  if(!prodId||!qty||qty<=0){toast('Veuillez remplir le formulaire','error');return;}if(!date){toast('Selectionnez une date','error');return;}
+  if(!prodId||!qty||qty<=0){toast('Veuillez remplir le formulaire correctement','error');return;}if(!date){toast('Selectionnez une date','error');return;}
   const entries=Store.get('entries');entries.push({id:nextId(entries),prodId,qty,date,note});Store.set('entries',entries);
   const prods=Store.get('products');const idx=prods.findIndex(p=>p.id===prodId);if(idx>=0){prods[idx].qty+=qty;Store.set('products',prods);}
   document.getElementById('entryQty').value='';document.getElementById('entryNote').value='';toast(`Entree de ${qty} unites enregistree`);renderEntries();
 }
 
-/* Sorties */
+/* ===== Sorties ===== */
 function renderExits() {
   const prods=Store.get('products');
-  document.getElementById('exitProduct').innerHTML=prods.map(p=>`<option value="${p.id}">${p.name} (stock: ${p.qty})</option>`).join('');
+  const sel = document.getElementById('exitProduct');
+  if (prods.length) {
+    sel.innerHTML = prods.map(p=>`<option value="${p.id}">${p.name} (stock: ${p.qty})</option>`).join('');
+    sel.disabled = false;
+  } else {
+    sel.innerHTML = '<option value="">-- Aucun produit --</option>';
+    sel.disabled = true;
+  }
   document.getElementById('exitDate').value=today();
   const exits=Store.get('exits').sort((a,b)=>b.id-a.id).slice(0,50);
-  document.getElementById('exitsBody').innerHTML=exits.length?exits.map(e=>{const p=getProd(e.prodId);return `<tr><td style="color:#8b949e">${e.date}</td><td style="font-weight:500">${p.name}</td><td style="color:#ef4444;font-weight:600">-${e.qty}</td><td style="color:#8b949e">${e.note||'-'}</td></tr>`;}).join(''):'<tr><td colspan="4" style="text-align:center;color:#8b949e;padding:40px"><i class="fa-solid fa-arrow-up" style="font-size:1.5rem;display:block;margin-bottom:8px;opacity:.3"></i>Aucune sortie enregistree</td></tr>';
+  document.getElementById('exitsBody').innerHTML=exits.length?exits.map(e=>{const p=getProd(e.prodId);return `<tr><td style="color:#8b949e">${e.date}</td><td style="font-weight:500">${p.name}</td><td style="color:#ef4444;font-weight:600">-${e.qty}</td><td style="color:#8b949e">${e.note||'-'}</td></tr>`;}).join(''):'<tr><td colspan="4"><div class="empty-state"><i class="fa-solid fa-arrow-up"></i><p>Aucune sortie enregistree</p><p class="hint">Ajoutez d\'abord des produits, puis enregistrez vos sorties de stock.</p></div></td></tr>';
 }
 function addExit() {
   const prodId=+document.getElementById('exitProduct').value,qty=+document.getElementById('exitQty').value,date=document.getElementById('exitDate').value,note=document.getElementById('exitNote').value.trim();
-  if(!prodId||!qty||qty<=0){toast('Veuillez remplir le formulaire','error');return;}if(!date){toast('Selectionnez une date','error');return;}
+  if(!prodId||!qty||qty<=0){toast('Veuillez remplir le formulaire correctement','error');return;}if(!date){toast('Selectionnez une date','error');return;}
   const prods=Store.get('products');const p=prods.find(x=>x.id===prodId);
-  if(!p||p.qty<qty){toast('Stock insuffisant','error');return;}
+  if(!p||p.qty<qty){toast('Stock insuffisant pour cette sortie','error');return;}
   const exits=Store.get('exits');exits.push({id:nextId(exits),prodId,qty,date,note});Store.set('exits',exits);
   p.qty-=qty;Store.set('products',prods);
   document.getElementById('exitQty').value='';document.getElementById('exitNote').value='';toast(`Sortie de ${qty} unites enregistree`);renderExits();
 }
 
-/* Fournisseurs */
+/* ===== Fournisseurs ===== */
 function renderSuppliers() {
   const sups=Store.get('suppliers');const prods=Store.get('products');
   const q=(document.getElementById('supplierSearch')?.value||'').toLowerCase();
   const filtered=sups.filter(s=>s.name.toLowerCase().includes(q));
-  document.getElementById('suppliersBody').innerHTML=filtered.length?filtered.map(s=>{const nb=prods.filter(p=>p.supId===s.id).length;return `<tr><td style="font-weight:600">${s.name}</td><td style="color:#8b949e">${s.phone}</td><td style="color:#8b949e">${s.email}</td><td><span class="badge" style="background:rgba(240,180,41,.12);color:#f0b429">${nb} produit${nb>1?'s':''}</span></td><td><div style="display:flex;gap:6px"><button class="btn btn-sm btn-secondary btn-icon" onclick="openSupplierModal(${s.id})"><i class="fa-solid fa-pen-to-square"></i></button><button class="btn btn-sm btn-danger btn-icon" onclick="deleteSupplier(${s.id})"><i class="fa-solid fa-trash"></i></button></div></td></tr>`;}).join(''):'<tr><td colspan="5" style="text-align:center;color:#8b949e;padding:32px">Aucun fournisseur</td></tr>';
+  document.getElementById('suppliersBody').innerHTML=filtered.length?filtered.map(s=>{const nb=prods.filter(p=>p.supId===s.id).length;return `<tr><td style="font-weight:600">${s.name}</td><td style="color:#8b949e">${s.phone}</td><td style="color:#8b949e">${s.email}</td><td><span class="badge" style="background:rgba(240,180,41,.12);color:#f0b429">${nb} produit${nb>1?'s':''}</span></td><td><div style="display:flex;gap:6px"><button class="btn btn-sm btn-secondary btn-icon" onclick="openSupplierModal(${s.id})"><i class="fa-solid fa-pen-to-square"></i></button><button class="btn btn-sm btn-danger btn-icon" onclick="deleteSupplier(${s.id})"><i class="fa-solid fa-trash"></i></button></div></td></tr>`;}).join(''):'<tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-truck-field"></i><p>Aucun fournisseur enregistre</p><p class="hint">Cliquez sur "Ajouter" pour enregistrer votre premier fournisseur.</p></div></td></tr>';
 }
 function openSupplierModal(id) {
   const s=id?getSup(id):{name:'',phone:'',email:''};
-  openModal(id?'Modifier le fournisseur':'Ajouter un fournisseur',`<div style="display:flex;flex-direction:column;gap:14px"><div><label class="form-label">Nom</label><input type="text" class="form-input" id="mSupName" value="${s.name}"></div><div><label class="form-label">Telephone</label><input type="text" class="form-input" id="mSupPhone" value="${s.phone}"></div><div><label class="form-label">Email</label><input type="email" class="form-input" id="mSupEmail" value="${s.email}"></div></div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="saveSupplier(${id||0})">${id?'Enregistrer':'Ajouter'}</button>`);
+  openModal(id?'Modifier le fournisseur':'Ajouter un fournisseur',`<div style="display:flex;flex-direction:column;gap:14px"><div><label class="form-label">Nom du fournisseur</label><input type="text" class="form-input" id="mSupName" value="${s.name}" placeholder="Ex : Societe XYZ"></div><div><label class="form-label">Telephone</label><input type="text" class="form-input" id="mSupPhone" value="${s.phone}" placeholder="Ex : 0522-123456"></div><div><label class="form-label">Email</label><input type="email" class="form-input" id="mSupEmail" value="${s.email}" placeholder="Ex : contact@xyz.ma"></div></div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="saveSupplier(${id||0})">${id?'Enregistrer':'Ajouter'}</button>`);
+  setTimeout(()=>{const el=document.getElementById('mSupName');if(el)el.focus();},100);
 }
 function saveSupplier(id) {
-  const name=document.getElementById('mSupName').value.trim();if(!name){toast('Saisissez un nom','error');return;}
+  const name=document.getElementById('mSupName').value.trim();
+  if(!name){toast('Veuillez saisir un nom','error');return;}
   const data={name,phone:document.getElementById('mSupPhone').value.trim(),email:document.getElementById('mSupEmail').value.trim()};
   const sups=Store.get('suppliers');
   if(id){const idx=sups.findIndex(s=>s.id===id);if(idx>=0)sups[idx]={...sups[idx],...data};toast('Fournisseur modifie');}else{sups.push({id:nextId(sups),...data});toast('Fournisseur ajoute');}
   Store.set('suppliers',sups);closeModal();renderSuppliers();
 }
 function deleteSupplier(id) {
-  openModal('Confirmer','<p style="color:#8b949e">Supprimer ce fournisseur ?</p>',`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-danger" onclick="Store.set('suppliers',Store.get('suppliers').filter(s=>s.id!==${id}));closeModal();toast('Fournisseur supprime','info');renderSuppliers();">Supprimer</button>`);
+  const s=getSup(id);
+  const nbProds=Store.get('products').filter(p=>p.supId===id).length;
+  openModal('Confirmer la suppression',`<div style="text-align:center;padding:10px 0"><i class="fa-solid fa-triangle-exclamation" style="font-size:2.5rem;color:#ef4444;margin-bottom:12px"></i><p style="color:#f1f5f9;font-size:1.05rem;font-weight:600;margin-bottom:6px">Supprimer ce fournisseur ?</p><p style="color:#8b949e;font-size:.85rem">${s.name}</p>${nbProds?`<p style="color:#f59e0b;font-size:.8rem;margin-top:8px"><i class="fa-solid fa-triangle-exclamation"></i> ${nbProds} produit(s) associe(s) — le fournisseur sera remplace par "-"</p>`:''}</div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-danger" onclick="confirmDeleteSupplier(${id})"><i class="fa-solid fa-trash"></i> Supprimer</button>`);
+}
+function confirmDeleteSupplier(id) {
+  Store.set('suppliers',Store.get('suppliers').filter(s=>s.id!==id));
+  /* Mettre a jour les produits associes */
+  const prods=Store.get('products');
+  prods.forEach(p=>{if(p.supId===id)p.supId=null;});
+  Store.set('products',prods);
+  closeModal();toast('Fournisseur supprime','info');renderSuppliers();
 }
 
-/* Categories */
+/* ===== Categories ===== */
 function renderCategories() {
-  const cats=Store.get('categories');const prods=Store.get('products');
-  document.getElementById('categoriesGrid').innerHTML=cats.map(c=>{const nb=prods.filter(p=>p.catId===c.id).length;const val=prods.filter(p=>p.catId===c.id).reduce((s,p)=>s+p.qty*p.price,0);return `<div class="stat-card" style="border-left:3px solid ${c.color}"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><h4 style="font-weight:700;font-size:1.05rem">${c.name}</h4><div style="display:flex;gap:6px"><button class="btn btn-sm btn-secondary btn-icon" onclick="openCategoryModal(${c.id})"><i class="fa-solid fa-pen-to-square"></i></button><button class="btn btn-sm btn-danger btn-icon" onclick="deleteCategory(${c.id})"><i class="fa-solid fa-trash"></i></button></div></div><p style="font-size:.82rem;color:#8b949e;margin-bottom:10px">${c.desc}</p><div style="display:flex;gap:16px;font-size:.82rem"><span><strong style="color:#f1f5f9">${nb}</strong> <span style="color:#8b949e">produit${nb>1?'s':''}</span></span><span><strong style="color:#f1f5f9">${fmtD(val)}</strong></span></div></div>`;}).join('');
+  const cats=Store.get('categories'); const prods=Store.get('products');
+  document.getElementById('categoriesGrid').innerHTML=cats.length?cats.map((c,i)=>{const nb=prods.filter(p=>p.catId===c.id).length;return `<div class="cat-card"><div class="cat-color" style="background:${c.color}22;color:${c.color}"><i class="fa-solid fa-tag"></i></div><h4 style="font-weight:700;font-size:1rem;margin-bottom:4px">${c.name}</h4><p style="color:#8b949e;font-size:.82rem;margin-bottom:12px;line-height:1.4">${c.desc||'Aucune description'}</p><div style="display:flex;align-items:center;justify-content:space-between"><span class="badge" style="background:rgba(240,180,41,.12);color:#f0b429">${nb} produit${nb>1?'s':''}</span><div style="display:flex;gap:6px"><button class="btn btn-sm btn-secondary btn-icon" onclick="openCategoryModal(${c.id})"><i class="fa-solid fa-pen-to-square"></i></button><button class="btn btn-sm btn-danger btn-icon" onclick="deleteCategory(${c.id})"><i class="fa-solid fa-trash"></i></button></div></div></div>`;}).join(''):'<div style="grid-column:1/-1"><div class="empty-state"><i class="fa-solid fa-tags"></i><p>Aucune categorie creee</p><p class="hint">Les categories vous permettent d\'organiser vos produits. Cliquez sur "Ajouter" pour commencer.</p></div></div>';
 }
 function openCategoryModal(id) {
-  const c=id?getCat(id):{name:'',desc:'',color:'#f0b429'};
-  openModal(id?'Modifier la categorie':'Ajouter une categorie',`<div style="display:flex;flex-direction:column;gap:14px"><div><label class="form-label">Nom</label><input type="text" class="form-input" id="mCatName" value="${c.name}"></div><div><label class="form-label">Description</label><input type="text" class="form-input" id="mCatDesc" value="${c.desc}"></div><div><label class="form-label">Couleur</label><input type="color" id="mCatColor" value="${c.color}" style="width:60px;height:36px;border:none;background:none;cursor:pointer"></div></div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="saveCategory(${id||0})">${id?'Enregistrer':'Ajouter'}</button>`);
+  const cats=Store.get('categories');
+  const c=id?getCat(id):{name:'',desc:'',color:CAT_COLORS[cats.length%CAT_COLORS.length]};
+  const colorOpts=CAT_COLORS.map(cl=>`<div onclick="document.getElementById('mCatColor').value='${cl}';document.querySelectorAll('.color-opt').forEach(x=>x.classList.remove('ring-2'));this.classList.add('ring-2');this.classList.add('ring-white')" class="color-opt ${c.color===cl?'ring-2 ring-white':''}" style="width:32px;height:32px;border-radius:8px;background:${cl};cursor:pointer;transition:transform .15s ease;flex-shrink:0"></div>`).join('');
+  openModal(id?'Modifier la categorie':'Ajouter une categorie',`<div style="display:flex;flex-direction:column;gap:14px"><div><label class="form-label">Nom de la categorie</label><input type="text" class="form-input" id="mCatName" value="${c.name}" placeholder="Ex : Alimentation"></div><div><label class="form-label">Description</label><input type="text" class="form-input" id="mCatDesc" value="${c.desc||''}" placeholder="Optionnel"></div><div><label class="form-label">Couleur</label><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">${colorOpts}</div><input type="hidden" id="mCatColor" value="${c.color}"></div></div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="saveCategory(${id||0})">${id?'Enregistrer':'Ajouter'}</button>`);
+  setTimeout(()=>{const el=document.getElementById('mCatName');if(el)el.focus();},100);
 }
 function saveCategory(id) {
-  const name=document.getElementById('mCatName').value.trim();if(!name){toast('Saisissez un nom','error');return;}
-  const data={name,desc:document.getElementById('mCatDesc').value.trim(),color:document.getElementById('mCatColor').value};
+  const name=document.getElementById('mCatName').value.trim();
+  if(!name){toast('Veuillez saisir un nom','error');return;}
+  const data={name,desc:document.getElementById('mCatDesc').value.trim(),color:document.getElementById('mCatColor').value||CAT_COLORS[0]};
   const cats=Store.get('categories');
   if(id){const idx=cats.findIndex(c=>c.id===id);if(idx>=0)cats[idx]={...cats[idx],...data};toast('Categorie modifiee');}else{cats.push({id:nextId(cats),...data});toast('Categorie ajoutee');}
   Store.set('categories',cats);closeModal();renderCategories();
 }
 function deleteCategory(id) {
-  const n=Store.get('products').filter(p=>p.catId===id).length;
-  if(n>0){toast(`Impossible : ${n} produit(s) dans cette categorie`,'error');return;}
-  openModal('Confirmer','<p style="color:#8b949e">Supprimer cette categorie ?</p>',`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-danger" onclick="Store.set('categories',Store.get('categories').filter(c=>c.id!==${id}));closeModal();toast('Categorie supprimee','info');renderCategories();">Supprimer</button>`);
+  const c=getCat(id);
+  const nbProds=Store.get('products').filter(p=>p.catId===id).length;
+  openModal('Confirmer la suppression',`<div style="text-align:center;padding:10px 0"><i class="fa-solid fa-triangle-exclamation" style="font-size:2.5rem;color:#ef4444;margin-bottom:12px"></i><p style="color:#f1f5f9;font-size:1.05rem;font-weight:600;margin-bottom:6px">Supprimer cette categorie ?</p><p style="color:#8b949e;font-size:.85rem">${c.name}</p>${nbProds?`<p style="color:#f59e0b;font-size:.8rem;margin-top:8px"><i class="fa-solid fa-triangle-exclamation"></i> ${nbProds} produit(s) associe(s)</p>`:''}</div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-danger" onclick="confirmDeleteCategory(${id})"><i class="fa-solid fa-trash"></i> Supprimer</button>`);
 }
-
-/* Inventaire */
-let invFilter = '';
-function filterInventory(f) { invFilter = f; renderInventory(); }
-function renderInventory() {
+function confirmDeleteCategory(id) {
+  Store.set('categories',Store.get('categories').filter(c=>c.id!==id));
   const prods=Store.get('products');
-  const filtered=invFilter?prods.filter(p=>stockStatus(p.qty,p.min)===invFilter):prods;
-  document.getElementById('inventoryGrid').innerHTML=filtered.length?filtered.map(p=>{const st=stockStatus(p.qty,p.min);const cat=getCat(p.catId);const maxQ=Math.max(p.min*3,p.qty,1);const pct=Math.min(100,(p.qty/maxQ)*100);const bc=st==='out'?'#ef4444':st==='low'?'#f59e0b':'#22c55e';return `<div class="stat-card"><div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:10px"><div><div style="font-weight:700;font-size:.95rem;margin-bottom:2px">${p.name}</div><div style="font-size:.78rem;color:${cat.color}">${cat.name}</div></div>${statusBadge(st)}</div><div style="display:flex;align-items:baseline;gap:6px;margin-bottom:6px"><span style="font-size:1.5rem;font-weight:700">${fmt(p.qty)}</span><span style="font-size:.78rem;color:#8b949e">/ min ${p.min}</span></div><div class="stock-bar"><div class="stock-bar-fill" style="width:${pct}%;background:${bc}"></div></div><div style="display:flex;justify-content:space-between;margin-top:10px;font-size:.78rem;color:#8b949e"><span>Prix: ${fmtD(p.price)}</span><span>Valeur: ${fmtD(p.qty*p.price)}</span></div></div>`;}).join(''):'<p style="color:#8b949e;text-align:center;padding:40px;grid-column:1/-1">Aucun produit dans cette categorie</p>';
+  prods.forEach(p=>{if(p.catId===id)p.catId=null;});
+  Store.set('products',prods);
+  closeModal();toast('Categorie supprimee','info');renderCategories();
 }
 
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+/* ===== Inventaire ===== */
+let inventoryFilter = '';
+function filterInventory(f) { inventoryFilter = f; renderInventory(); }
+
+function renderInventory() {
+  const prods = Store.get('products').filter(p => !inventoryFilter || stockStatus(p.qty, p.min) === inventoryFilter);
+  document.getElementById('inventoryGrid').innerHTML = prods.length ? prods.map(p => {
+    const cat = getCat(p.catId);
+    const st = stockStatus(p.qty, p.min);
+    const pct = p.min > 0 ? Math.min(100, (p.qty / (p.min * 3)) * 100) : (p.qty > 0 ? 100 : 0);
+    const barColor = st === 'ok' ? '#22c55e' : st === 'low' ? '#f59e0b' : '#ef4444';
+    return `<div class="inv-card">
+      <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:10px">
+        <div><div style="font-weight:600;font-size:.9rem;margin-bottom:2px">${p.name}</div><div style="font-size:.78rem;color:${cat.color}">${cat.name}</div></div>
+        ${statusBadge(st)}
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:6px">
+        <span style="color:#8b949e">Stock : <strong style="color:#f1f5f9">${fmt(p.qty)}</strong></span>
+        <span style="color:#8b949e">Min : ${p.min}</span>
+      </div>
+      <div class="stock-bar"><div class="stock-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+      <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:.78rem">
+        <span style="color:#8b949e">Prix : ${fmtD(p.price)}</span>
+        <span style="color:#f0b429;font-weight:600">Valeur : ${fmtD(p.qty*p.price)}</span>
+      </div>
+    </div>`;
+  }).join('') : '<div style="grid-column:1/-1"><div class="empty-state"><i class="fa-solid fa-clipboard-list"></i><p>' + (inventoryFilter ? 'Aucun produit avec ce statut' : 'Aucun produit en inventaire') + '</p><p class="hint">Ajoutez des produits pour voir leur etat de stock ici.</p></div></div>';
+}
+
+/* ===== Initialisation ===== */
 navigate('dashboard');
 </script>
 </body>
