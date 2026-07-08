@@ -47,7 +47,6 @@ body{font-family:'Space Grotesk',sans-serif;background:#131920;color:#f1f5f9;ove
 .data-table tbody td{padding:12px 16px;border-bottom:1px solid #1e2a3a;font-size:.875rem}
 .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600}
 .badge-green{background:rgba(34,197,94,.12);color:#22c55e}
-.badge-yellow{background:rgba(245,158,11,.12);color:#f59e0b}
 .badge-red{background:rgba(239,68,68,.12);color:#ef4444}
 .btn{padding:9px 18px;border-radius:8px;font-size:.85rem;font-weight:600;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:all .2s ease;font-family:inherit}
 .btn-primary{background:#f0b429;color:#0d1117}
@@ -88,8 +87,6 @@ select.form-input{appearance:none;cursor:pointer}
 .mobile-toggle{display:none}
 @media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.mobile-toggle{display:flex}.main-content{padding:20px 16px}.main-header{padding:16px}}
 .chart-wrap{background:#1a2232;border:1px solid #2a3444;border-radius:12px;padding:20px}
-.stock-bar{height:6px;border-radius:3px;background:#2a3444;overflow:hidden}
-.stock-bar-fill{height:100%;border-radius:3px;transition:width .4s ease}
 .search-box{position:relative}
 .search-box i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#4a5568;font-size:.85rem}
 .search-box input{padding-left:40px}
@@ -118,11 +115,6 @@ select.form-input{appearance:none;cursor:pointer}
 .onboard-card .onboard-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
 .onboard-card .onboard-title{font-weight:600;font-size:.95rem;color:#f1f5f9;margin-bottom:4px}
 .onboard-card .onboard-desc{font-size:.8rem;color:#8b949e;line-height:1.4}
-.cat-card{background:#1a2232;border:1px solid #2a3444;border-radius:12px;padding:20px;transition:all .25s ease;position:relative;overflow:hidden}
-.cat-card:hover{border-color:#3a4a5e;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
-.cat-card .cat-color{width:40px;height:40px;border-radius:10px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-size:1rem}
-.inv-card{background:#1a2232;border:1px solid #2a3444;border-radius:12px;padding:18px;transition:all .25s ease}
-.inv-card:hover{border-color:#3a4a5e;transform:translateY(-1px)}
 </style>
 </head>
 <body>
@@ -150,9 +142,7 @@ select.form-input{appearance:none;cursor:pointer}
 <div class="main" id="main">
   <header class="main-header">
     <div style="display:flex;align-items:center;gap:12px">
-      <button class="btn btn-icon btn-secondary mobile-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
-        <i class="fa-solid fa-bars"></i>
-      </button>
+      <button class="btn btn-icon btn-secondary mobile-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fa-solid fa-bars"></i></button>
       <h1 id="pageTitle">Tableau de bord</h1>
     </div>
     <div style="display:flex;align-items:center;gap:12px">
@@ -164,9 +154,8 @@ select.form-input{appearance:none;cursor:pointer}
   </header>
 
   <div class="main-content">
-    <!-- Tableau de bord -->
     <div class="page active" id="page-dashboard">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8" id="statCards"></div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8" id="statCards"></div>
       <div id="onboardSection"></div>
       <div class="chart-wrap" id="recentActivityWrap">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
@@ -176,17 +165,11 @@ select.form-input{appearance:none;cursor:pointer}
       </div>
     </div>
 
-    <!-- Produits -->
     <div class="page" id="page-products">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-          <div class="search-box" style="width:220px">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" class="form-input" placeholder="Chercher un produit..." id="productSearch" oninput="renderProducts()">
-          </div>
-          <select class="form-input" style="width:170px" id="productCatFilter" onchange="renderProducts()">
-            <option value="">Toutes categories</option>
-          </select>
+          <div class="search-box" style="width:220px"><i class="fa-solid fa-magnifying-glass"></i><input type="text" class="form-input" placeholder="Chercher un produit..." id="productSearch" oninput="renderProducts()"></div>
+          <select class="form-input" style="width:170px" id="productCatFilter" onchange="renderProducts()"><option value="">Toutes categories</option></select>
           <div class="custom-cb" id="selectAllCb" onclick="toggleSelectAll()"></div>
           <span style="font-size:.8rem;color:#8b949e" id="selectCount">Tout selectionner</span>
         </div>
@@ -199,10 +182,7 @@ select.form-input{appearance:none;cursor:pointer}
       </div>
       <div class="chart-wrap" style="padding:0;overflow-x:auto">
         <table class="data-table" id="productsTable">
-          <thead><tr>
-            <th style="width:40px"></th>
-            <th>Produit</th><th>Categorie</th><th>Quantite</th><th>Stock min</th><th>Statut</th><th>Actions</th>
-          </tr></thead>
+          <thead><tr><th style="width:40px"></th><th>Produit</th><th>Categorie</th><th>Quantite</th><th>Statut</th><th>Actions</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
@@ -215,7 +195,6 @@ select.form-input{appearance:none;cursor:pointer}
       </div>
     </div>
 
-    <!-- Entrees -->
     <div class="page" id="page-entries">
       <h3 style="font-size:1rem;font-weight:600;color:#8b949e;margin-bottom:20px">Enregistrer une entree de stock</h3>
       <div class="chart-wrap mb-6">
@@ -234,7 +213,6 @@ select.form-input{appearance:none;cursor:pointer}
       </div>
     </div>
 
-    <!-- Sorties -->
     <div class="page" id="page-exits">
       <h3 style="font-size:1rem;font-weight:600;color:#8b949e;margin-bottom:20px">Enregistrer une sortie de stock</h3>
       <div class="chart-wrap mb-6">
@@ -253,7 +231,6 @@ select.form-input{appearance:none;cursor:pointer}
       </div>
     </div>
 
-    <!-- Fournisseurs -->
     <div class="page" id="page-suppliers">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
         <div class="search-box" style="width:240px"><i class="fa-solid fa-magnifying-glass"></i><input type="text" class="form-input" placeholder="Chercher un fournisseur..." id="supplierSearch" oninput="renderSuppliers()"></div>
@@ -264,7 +241,6 @@ select.form-input{appearance:none;cursor:pointer}
       </div>
     </div>
 
-    <!-- Categories -->
     <div class="page" id="page-categories">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
         <h3 style="font-size:1rem;font-weight:600;color:#8b949e">Gestion des categories</h3>
@@ -273,13 +249,11 @@ select.form-input{appearance:none;cursor:pointer}
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="categoriesGrid"></div>
     </div>
 
-    <!-- Inventaire -->
     <div class="page" id="page-inventory">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
         <h3 style="font-size:1rem;font-weight:600;color:#8b949e">Etat des stocks</h3>
         <div style="display:flex;gap:8px">
           <span class="badge badge-green" style="cursor:pointer" onclick="filterInventory('ok')">En stock</span>
-          <span class="badge badge-yellow" style="cursor:pointer" onclick="filterInventory('low')">Stock faible</span>
           <span class="badge badge-red" style="cursor:pointer" onclick="filterInventory('out')">Rupture</span>
           <span class="badge" style="background:rgba(139,148,158,.12);color:#8b949e;cursor:pointer" onclick="filterInventory('')">Tous</span>
         </div>
@@ -309,8 +283,8 @@ const Store = {
 };
 
 const SEED = { categories: [], suppliers: [], products: [], entries: [], exits: [] };
+const APP_VERSION = 7;
 
-const APP_VERSION = 6;
 function initData() {
   if (localStorage.getItem('gs_version') !== String(APP_VERSION)) {
     ['categories','suppliers','products','entries','exits'].forEach(k => { Store.set(k, SEED[k]); });
@@ -324,15 +298,12 @@ function getSup(id) { return Store.get('suppliers').find(s => s.id === id) || { 
 function getProd(id) { return Store.get('products').find(p => p.id === id) || { name:'-' }; }
 function fmt(n) { return new Intl.NumberFormat('fr-FR').format(n); }
 function nextId(arr) { return arr.length ? Math.max(...arr.map(x => x.id)) + 1 : 1; }
-function stockStatus(qty, min) { if (qty <= 0) return 'out'; if (qty <= min) return 'low'; return 'ok'; }
+function stockStatus(qty) { return qty <= 0 ? 'out' : 'ok'; }
 function statusBadge(st) {
   if (st === 'out') return '<span class="badge badge-red"><i class="fa-solid fa-circle-xmark"></i> Rupture</span>';
-  if (st === 'low') return '<span class="badge badge-yellow"><i class="fa-solid fa-triangle-exclamation"></i> Stock faible</span>';
   return '<span class="badge badge-green"><i class="fa-solid fa-circle-check"></i> En stock</span>';
 }
 function today() { return new Date().toISOString().split('T')[0]; }
-
-const CAT_COLORS = ['#f0b429','#22c55e','#3b82f6','#a855f7','#ef4444','#ec4899','#14b8a6','#f97316','#6366f1','#84cc16'];
 
 function toast(msg, type = 'success') {
   const c = document.getElementById('toastContainer');
@@ -387,12 +358,12 @@ function confirmBulkDelete() {
   const n = selectedIds.size; selectedIds.clear(); closeModal(); toast(`${n} produit(s) supprime(s)`, 'info'); updateSelectionUI(); renderProducts();
 }
 
-/* ===== Import / Export Excel ===== */
+/* Import / Export Excel */
 function downloadTemplate() {
   const cats = Store.get('categories'); const sups = Store.get('suppliers');
-  const wsData = [['Nom du produit','Categorie','Quantite','Stock minimum','Fournisseur'],['Exemple : Huile d\'olive 1L',cats[0]?.name||'Votre categorie',100,20,sups[0]?.name||'Votre fournisseur']];
+  const wsData = [['Nom du produit','Categorie','Quantite','Fournisseur'],['Exemple : Huile d\'olive 1L',cats[0]?.name||'Votre categorie',100,sups[0]?.name||'Votre fournisseur']];
   const ws = XLSX.utils.aoa_to_sheet(wsData);
-  ws['!cols'] = [{wch:30},{wch:18},{wch:12},{wch:15},{wch:30}];
+  ws['!cols'] = [{wch:30},{wch:18},{wch:12},{wch:30}];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Modele Import');
   XLSX.writeFile(wb, 'GestionStock_Modele_Import.xlsx');
@@ -402,7 +373,7 @@ function downloadTemplate() {
 function openImportModal() {
   openModal('Importer depuis Excel', `
     <div style="margin-bottom:16px">
-      <p style="color:#8b949e;font-size:.85rem;margin-bottom:14px">Importez un fichier <strong style="color:#f1f5f9">.xlsx</strong> ou <strong style="color:#f1f5f9">.xls</strong> contenant les colonnes : <span style="color:#f0b429">Nom, Categorie, Quantite, Stock minimum, Fournisseur</span>.</p>
+      <p style="color:#8b949e;font-size:.85rem;margin-bottom:14px">Importez un fichier <strong style="color:#f1f5f9">.xlsx</strong> ou <strong style="color:#f1f5f9">.xls</strong> contenant les colonnes : <span style="color:#f0b429">Nom, Categorie, Quantite, Fournisseur</span>.</p>
       <div class="drop-zone" id="dropZone">
         <input type="file" accept=".xlsx,.xls,.csv" id="fileInput" onchange="handleFileSelect(event)">
         <i class="fa-solid fa-cloud-arrow-up" style="display:block"></i>
@@ -451,10 +422,9 @@ function processFile(file) {
         const name = row['Nom du produit']||row['Nom']||row['nom']||row['Produit']||row['produit']||row['name']||'';
         const catName = row['Categorie']||row['categorie']||row['Catégorie']||row['catégorie']||'';
         const qty = parseFloat(row['Quantite']||row['quantite']||row['Quantité']||row['quantité']||row['Stock']||row['stock']||0);
-        const min = parseFloat(row['Stock minimum']||row['stock minimum']||row['Min']||row['min']||row['Seuil']||5);
         const supName = row['Fournisseur']||row['fournisseur']||'';
         if (!String(name).trim()) { errors++; return; }
-        pendingImportData.push({ name:String(name).trim(), catId:catMap[String(catName).toLowerCase()]||cats[0]?.id||1, qty:Math.max(0,isNaN(qty)?0:qty), min:Math.max(0,isNaN(min)?5:min), supId:supMap[String(supName).toLowerCase()]||sups[0]?.id||1, _catName:String(catName), _supName:String(supName), _catOk:!!catMap[String(catName).toLowerCase()], _supOk:!!supMap[String(supName).toLowerCase()] });
+        pendingImportData.push({ name:String(name).trim(), catId:catMap[String(catName).toLowerCase()]||cats[0]?.id||1, qty:Math.max(0,isNaN(qty)?0:qty), supId:supMap[String(supName).toLowerCase()]||sups[0]?.id||1, _catName:String(catName), _supName:String(supName), _catOk:!!catMap[String(catName).toLowerCase()], _supOk:!!supMap[String(supName).toLowerCase()] });
       });
       if (!pendingImportData.length) { toast('Aucune donnee valide trouvee', 'error'); return; }
       showImportPreview(errors);
@@ -466,9 +436,9 @@ function processFile(file) {
 function showImportPreview(errors) {
   document.getElementById('importPreview').style.display = 'block';
   document.getElementById('previewTitle').textContent = `Apercu : ${pendingImportData.length} produit(s)`;
-  let html = '<table><thead><tr><th>#</th><th>Nom</th><th>Categorie</th><th>Qte</th><th>Min</th><th>Fournisseur</th></tr></thead><tbody>';
+  let html = '<table><thead><tr><th>#</th><th>Nom</th><th>Categorie</th><th>Qte</th><th>Fournisseur</th></tr></thead><tbody>';
   pendingImportData.forEach((p, i) => {
-    html += `<tr><td style="color:#4a5568">${i+1}</td><td style="font-weight:500">${p.name}</td><td style="${p._catOk?'':'color:#f59e0b'}">${p._catName||'-'}${p._catOk?'':' <i class="fa-solid fa-triangle-exclamation" style="font-size:.65rem"></i>'}</td><td>${p.qty}</td><td>${p.min}</td><td style="${p._supOk?'':'color:#f59e0b'}">${p._supName||'-'}${p._supOk?'':' <i class="fa-solid fa-triangle-exclamation" style="font-size:.65rem"></i>'}</td></tr>`;
+    html += `<tr><td style="color:#4a5568">${i+1}</td><td style="font-weight:500">${p.name}</td><td style="${p._catOk?'':'color:#f59e0b'}">${p._catName||'-'}${p._catOk?'':' <i class="fa-solid fa-triangle-exclamation" style="font-size:.65rem"></i>'}</td><td>${p.qty}</td><td style="${p._supOk?'':'color:#f59e0b'}">${p._supName||'-'}${p._supOk?'':' <i class="fa-solid fa-triangle-exclamation" style="font-size:.65rem"></i>'}</td></tr>`;
   });
   html += '</tbody></table>';
   document.getElementById('previewTableWrap').innerHTML = html;
@@ -486,7 +456,7 @@ function confirmImport() {
   const overwrite = document.getElementById('overwriteCb').classList.contains('checked');
   let prods = overwrite ? [] : Store.get('products');
   const maxId = prods.length ? Math.max(...prods.map(p => p.id)) : 0;
-  pendingImportData.forEach((p, i) => prods.push({ id:maxId+i+1, name:p.name, catId:p.catId, qty:p.qty, min:p.min, supId:p.supId }));
+  pendingImportData.forEach((p, i) => prods.push({ id:maxId+i+1, name:p.name, catId:p.catId, qty:p.qty, supId:p.supId }));
   Store.set('products', prods);
   const n = pendingImportData.length; pendingImportData = []; closeModal(); toast(`${n} produit(s) importe(s)`); renderProducts();
 }
@@ -495,17 +465,16 @@ function exportToExcel() {
   const prods = Store.get('products');
   if (!prods.length) { toast('Aucun produit a exporter', 'error'); return; }
   const data = prods.map(p => {
-    const cat = getCat(p.catId); const sup = getSup(p.supId); const st = stockStatus(p.qty, p.min);
-    return { 'ID':p.id, 'Nom du produit':p.name, 'Categorie':cat.name, 'Quantite':p.qty, 'Stock minimum':p.min, 'Statut':st==='ok'?'En stock':st==='low'?'Stock faible':'Rupture', 'Fournisseur':sup.name };
+    const cat = getCat(p.catId); const sup = getSup(p.supId); const st = stockStatus(p.qty);
+    return { 'ID':p.id, 'Nom du produit':p.name, 'Categorie':cat.name, 'Quantite':p.qty, 'Statut':st==='ok'?'En stock':'Rupture', 'Fournisseur':sup.name };
   });
   const ws = XLSX.utils.json_to_sheet(data);
-  ws['!cols'] = [{wch:5},{wch:35},{wch:16},{wch:10},{wch:14},{wch:14},{wch:30}];
+  ws['!cols'] = [{wch:5},{wch:35},{wch:16},{wch:10},{wch:14},{wch:30}];
   const totalQty = prods.reduce((s,p)=>s+p.qty,0);
   const summaryData = [
     { 'Indicateur':'Total produits','Valeur':prods.length },
     { 'Indicateur':'Quantite totale en stock','Valeur':totalQty },
-    { 'Indicateur':'Alertes stock faible','Valeur':prods.filter(p=>stockStatus(p.qty,p.min)==='low').length },
-    { 'Indicateur':'Ruptures de stock','Valeur':prods.filter(p=>stockStatus(p.qty,p.min)==='out').length },
+    { 'Indicateur':'Ruptures de stock','Valeur':prods.filter(p=>stockStatus(p.qty)==='out').length },
     { 'Indicateur':'Date export','Valeur':new Date().toLocaleString('fr-FR') },
   ];
   const ws2 = XLSX.utils.json_to_sheet(summaryData);
@@ -517,7 +486,7 @@ function exportToExcel() {
   toast(`${prods.length} produit(s) exporte(s)`);
 }
 
-/* ===== Routeur ===== */
+/* Routeur */
 const PAGE_TITLES = { dashboard:'Tableau de bord', products:'Produits', entries:'Entrees de stock', exits:'Sorties de stock', suppliers:'Fournisseurs', categories:'Categories', inventory:'Inventaire' };
 let currentPage = 'dashboard';
 
@@ -554,18 +523,16 @@ function handleGlobalSearch(q) {
   if (currentPage === 'products') { document.getElementById('productSearch').value = q; renderProducts(); }
 }
 
-/* ===== Dashboard ===== */
+/* Dashboard */
 function renderDashboard() {
   const prods = Store.get('products');
   const cats = Store.get('categories');
   const sups = Store.get('suppliers');
   const totalQty = prods.reduce((s,p)=>s+p.qty,0);
-  const al = prods.filter(p=>stockStatus(p.qty,p.min)==='low').length;
-  const ru = prods.filter(p=>stockStatus(p.qty,p.min)==='out').length;
+  const ru = prods.filter(p=>stockStatus(p.qty)==='out').length;
   const cards = [
     { label:'Total Produits', value:fmt(prods.length), icon:'fa-boxes-stacked', color:'#f0b429', bg:'rgba(240,180,41,.12)', trend:prods.length+' produit(s)', up:true },
     { label:'Quantite Totale', value:fmt(totalQty)+' unites', icon:'fa-cubes', color:'#22c55e', bg:'rgba(34,197,94,.12)', trend:'Unites en stock', up:true },
-    { label:'Alertes Stock Faible', value:fmt(al), icon:'fa-triangle-exclamation', color:'#f59e0b', bg:'rgba(245,158,11,.12)', trend:al?'Necessitent attention':'Aucune alerte', up:false },
     { label:'Ruptures de Stock', value:fmt(ru), icon:'fa-circle-xmark', color:'#ef4444', bg:'rgba(239,68,68,.12)', trend:ru?'Commandes urgentes':'Aucune rupture', up:false },
   ];
   document.getElementById('statCards').innerHTML = cards.map(c => `<div class="stat-card"><div class="icon-wrap" style="background:${c.bg};color:${c.color}"><i class="fa-solid ${c.icon}"></i></div><div class="label">${c.label}</div><div class="value" style="animation:countUp .4s ease">${c.value}</div><div class="trend" style="color:${c.up?'#22c55e':c.color}"><i class="fa-solid ${c.up?'fa-arrow-trend-up':'fa-info-circle'}" style="font-size:.65rem"></i> ${c.trend}</div></div>`).join('');
@@ -575,31 +542,29 @@ function renderDashboard() {
     onboard.innerHTML = `
       <div style="margin-bottom:20px">
         <h3 style="font-size:1.05rem;font-weight:700;color:#f1f5f9;margin-bottom:6px">Bienvenue dans GestionStock Pro</h3>
-        <p style="color:#8b949e;font-size:.88rem">Pour commencer, configurez vos donnees de base en suivant ces etapes :</p>
+        <p style="color:#8b949e;font-size:.88rem">Pour commencer, configurez vos donnees de base :</p>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <div class="onboard-card" onclick="navigate('categories')">
           <div class="onboard-icon" style="background:rgba(240,180,41,.12);color:#f0b429"><i class="fa-solid fa-tags"></i></div>
-          <div><div class="onboard-title">1. Creer des categories</div><div class="onboard-desc">Organisez vos produits par categorie (Alimentation, Boissons, etc.)</div></div>
+          <div><div class="onboard-title">1. Creer des categories</div><div class="onboard-desc">Organisez vos produits par categorie</div></div>
         </div>
         <div class="onboard-card" onclick="navigate('suppliers')">
           <div class="onboard-icon" style="background:rgba(34,197,94,.12);color:#22c55e"><i class="fa-solid fa-truck-field"></i></div>
-          <div><div class="onboard-title">2. Ajouter des fournisseurs</div><div class="onboard-desc">Enregistrez les informations de vos fournisseurs</div></div>
+          <div><div class="onboard-title">2. Ajouter des fournisseurs</div><div class="onboard-desc">Enregistrez vos fournisseurs</div></div>
         </div>
         <div class="onboard-card" onclick="navigate('products')">
           <div class="onboard-icon" style="background:rgba(59,130,246,.12);color:#3b82f6"><i class="fa-solid fa-boxes-stacked"></i></div>
-          <div><div class="onboard-title">3. Saisir vos produits</div><div class="onboard-desc">Ajoutez vos articles manuellement ou via import Excel</div></div>
+          <div><div class="onboard-title">3. Saisir vos produits</div><div class="onboard-desc">Manuellement ou via import Excel</div></div>
         </div>
       </div>`;
-  } else {
-    onboard.innerHTML = '';
-  }
+  } else { onboard.innerHTML = ''; }
 
   const allMoves=[...Store.get('entries').slice(-5).map(e=>({...e,type:'entry'})),...Store.get('exits').slice(-5).map(e=>({...e,type:'exit'}))].sort((a,b)=>b.id-a.id).slice(0,8);
   document.getElementById('recentActivity').innerHTML = allMoves.length ? `<table class="data-table"><thead><tr><th>Type</th><th>Produit</th><th>Quantite</th><th>Date</th></tr></thead><tbody>${allMoves.map(m=>{const p=getProd(m.prodId);return `<tr><td>${m.type==='entry'?'<span class="badge badge-green"><i class="fa-solid fa-arrow-down"></i> Entree</span>':'<span class="badge badge-red"><i class="fa-solid fa-arrow-up"></i> Sortie</span>'}</td><td>${p.name}</td><td style="font-weight:600">${m.type==='entry'?'+':'-'}${m.qty}</td><td style="color:#8b949e">${m.date}</td></tr>`;}).join('')}</tbody></table>` : '<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>Aucune activite enregistree</p><p class="hint">Les entrees et sorties apparaitront ici une fois ajoutees.</p></div>';
 }
 
-/* ===== Produits ===== */
+/* Produits */
 function renderProducts() {
   const prods = Store.get('products'); const cats = Store.get('categories');
   const q = (document.getElementById('productSearch')?.value||'').toLowerCase();
@@ -615,27 +580,24 @@ function renderProducts() {
   const allSel = filtered.length > 0 && filtered.every(p => selectedIds.has(p.id));
   const cb = document.getElementById('selectAllCb'); if (cb) cb.className = 'custom-cb'+(allSel?' checked':'');
   document.querySelector('#productsTable tbody').innerHTML = filtered.length ? filtered.map(p => {
-    const cat=getCat(p.catId); const st=stockStatus(p.qty,p.min); const ck=selectedIds.has(p.id);
-    return `<tr class="${ck?'selected-row':''}"><td><div class="custom-cb ${ck?'checked':''}" onclick="toggleSelect(${p.id});renderProducts()"></div></td><td style="font-weight:600">${p.name}</td><td><span style="color:${cat.color}">${cat.name}</span></td><td>${fmt(p.qty)}</td><td>${p.min}</td><td>${statusBadge(st)}</td><td><div style="display:flex;gap:6px"><button class="btn btn-sm btn-secondary btn-icon" onclick="openProductModal(${p.id})"><i class="fa-solid fa-pen-to-square"></i></button><button class="btn btn-sm btn-danger btn-icon" onclick="deleteProduct(${p.id})"><i class="fa-solid fa-trash"></i></button></div></td></tr>`;
-  }).join('') : '<tr><td colspan="7"><div class="empty-state"><i class="fa-solid fa-box-open"></i><p>Aucun produit pour le moment</p><p class="hint">Cliquez sur "Ajouter" pour saisir votre premier article, ou utilisez "Importer Excel" pour un chargement rapide.</p></div></td></tr>';
+    const cat=getCat(p.catId); const st=stockStatus(p.qty); const ck=selectedIds.has(p.id);
+    return `<tr class="${ck?'selected-row':''}"><td><div class="custom-cb ${ck?'checked':''}" onclick="toggleSelect(${p.id});renderProducts()"></div></td><td style="font-weight:600">${p.name}</td><td><span style="color:${cat.color}">${cat.name}</span></td><td>${fmt(p.qty)}</td><td>${statusBadge(st)}</td><td><div style="display:flex;gap:6px"><button class="btn btn-sm btn-secondary btn-icon" onclick="openProductModal(${p.id})"><i class="fa-solid fa-pen-to-square"></i></button><button class="btn btn-sm btn-danger btn-icon" onclick="deleteProduct(${p.id})"><i class="fa-solid fa-trash"></i></button></div></td></tr>`;
+  }).join('') : '<tr><td colspan="6"><div class="empty-state"><i class="fa-solid fa-box-open"></i><p>Aucun produit pour le moment</p><p class="hint">Cliquez sur "Ajouter" ou utilisez "Importer Excel".</p></div></td></tr>';
   updateSelectionUI();
 }
 
 function openProductModal(id) {
   const cats=Store.get('categories'); const sups=Store.get('suppliers');
-  if (!cats.length || !sups.length) {
-    toast('Veuillez d\'abord ajouter au moins une categorie et un fournisseur', 'error');
-    return;
-  }
-  const p = id ? getProd(id) : { name:'', catId:cats[0].id, qty:0, min:5, supId:sups[0].id };
-  openModal(id?'Modifier le produit':'Ajouter un produit',`<div style="display:flex;flex-direction:column;gap:14px"><div><label class="form-label">Nom du produit</label><input type="text" class="form-input" id="mProdName" value="${p.name}" placeholder="Ex : Huile d'olive 1L"></div><div class="grid grid-cols-2 gap-3"><div><label class="form-label">Categorie</label><select class="form-input" id="mProdCat">${cats.map(c=>`<option value="${c.id}" ${c.id===p.catId?'selected':''}>${c.name}</option>`).join('')}</select></div><div><label class="form-label">Fournisseur</label><select class="form-input" id="mProdSup">${sups.map(s=>`<option value="${s.id}" ${s.id===p.supId?'selected':''}>${s.name}</option>`).join('')}</select></div></div><div class="grid grid-cols-2 gap-3"><div><label class="form-label">Quantite</label><input type="number" class="form-input" id="mProdQty" value="${p.qty}" min="0"></div><div><label class="form-label">Stock min</label><input type="number" class="form-input" id="mProdMin" value="${p.min}" min="0"></div></div></div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="saveProduct(${id||0})">${id?'Enregistrer':'Ajouter'}</button>`);
+  if (!cats.length || !sups.length) { toast('Ajoutez d\'abord une categorie et un fournisseur', 'error'); return; }
+  const p = id ? getProd(id) : { name:'', catId:cats[0].id, qty:0, supId:sups[0].id };
+  openModal(id?'Modifier le produit':'Ajouter un produit',`<div style="display:flex;flex-direction:column;gap:14px"><div><label class="form-label">Nom du produit</label><input type="text" class="form-input" id="mProdName" value="${p.name}" placeholder="Ex : Huile d'olive 1L"></div><div class="grid grid-cols-2 gap-3"><div><label class="form-label">Categorie</label><select class="form-input" id="mProdCat">${cats.map(c=>`<option value="${c.id}" ${c.id===p.catId?'selected':''}>${c.name}</option>`).join('')}</select></div><div><label class="form-label">Fournisseur</label><select class="form-input" id="mProdSup">${sups.map(s=>`<option value="${s.id}" ${s.id===p.supId?'selected':''}>${s.name}</option>`).join('')}</select></div></div><div><label class="form-label">Quantite</label><input type="number" class="form-input" id="mProdQty" value="${p.qty}" min="0"></div></div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="saveProduct(${id||0})">${id?'Enregistrer':'Ajouter'}</button>`);
   setTimeout(()=>{const el=document.getElementById('mProdName');if(el)el.focus();},100);
 }
 
 function saveProduct(id) {
   const name=document.getElementById('mProdName').value.trim();
   if(!name){toast('Veuillez saisir un nom de produit','error');return;}
-  const data={name,catId:+document.getElementById('mProdCat').value,supId:+document.getElementById('mProdSup').value,qty:Math.max(0,+document.getElementById('mProdQty').value||0),min:Math.max(0,+document.getElementById('mProdMin').value||0)};
+  const data={name,catId:+document.getElementById('mProdCat').value,supId:+document.getElementById('mProdSup').value,qty:Math.max(0,+document.getElementById('mProdQty').value||0)};
   const prods=Store.get('products');
   if(id){const idx=prods.findIndex(p=>p.id===id);if(idx>=0)prods[idx]={...prods[idx],...data};toast('Produit modifie');}else{prods.push({id:nextId(prods),...data});toast('Produit ajoute');}
   Store.set('products',prods);closeModal();renderProducts();
@@ -646,20 +608,15 @@ function deleteProduct(id) {
   openModal('Confirmer la suppression',`<div style="text-align:center;padding:10px 0"><i class="fa-solid fa-triangle-exclamation" style="font-size:2.5rem;color:#ef4444;margin-bottom:12px"></i><p style="color:#f1f5f9;font-size:1.05rem;font-weight:600;margin-bottom:6px">Supprimer ce produit ?</p><p style="color:#8b949e;font-size:.85rem">${p.name}</p></div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-danger" onclick="Store.set('products',Store.get('products').filter(p=>p.id!==${id}));closeModal();toast('Produit supprime','info');renderProducts();"><i class="fa-solid fa-trash"></i> Supprimer</button>`);
 }
 
-/* ===== Entrees ===== */
+/* Entrees */
 function renderEntries() {
   const prods=Store.get('products');
   const sel = document.getElementById('entryProduct');
-  if (prods.length) {
-    sel.innerHTML = prods.map(p=>`<option value="${p.id}">${p.name} (stock: ${p.qty})</option>`).join('');
-    sel.disabled = false;
-  } else {
-    sel.innerHTML = '<option value="">-- Aucun produit --</option>';
-    sel.disabled = true;
-  }
+  if (prods.length) { sel.innerHTML=prods.map(p=>`<option value="${p.id}">${p.name} (stock: ${p.qty})</option>`).join(''); sel.disabled=false; }
+  else { sel.innerHTML='<option value="">-- Aucun produit --</option>'; sel.disabled=true; }
   document.getElementById('entryDate').value=today();
   const entries=Store.get('entries').sort((a,b)=>b.id-a.id).slice(0,50);
-  document.getElementById('entriesBody').innerHTML=entries.length?entries.map(e=>{const p=getProd(e.prodId);return `<tr><td style="color:#8b949e">${e.date}</td><td style="font-weight:500">${p.name}</td><td style="color:#22c55e;font-weight:600">+${e.qty}</td><td style="color:#8b949e">${e.note||'-'}</td></tr>`;}).join(''):'<tr><td colspan="4"><div class="empty-state"><i class="fa-solid fa-arrow-down"></i><p>Aucune entree enregistree</p><p class="hint">Ajoutez d\'abord des produits, puis enregistrez vos entrees de stock.</p></div></td></tr>';
+  document.getElementById('entriesBody').innerHTML=entries.length?entries.map(e=>{const p=getProd(e.prodId);return `<tr><td style="color:#8b949e">${e.date}</td><td style="font-weight:500">${p.name}</td><td style="color:#22c55e;font-weight:600">+${e.qty}</td><td style="color:#8b949e">${e.note||'-'}</td></tr>`;}).join(''):'<tr><td colspan="4"><div class="empty-state"><i class="fa-solid fa-arrow-down"></i><p>Aucune entree enregistree</p><p class="hint">Ajoutez d\'abord des produits, puis enregistrez vos entrees.</p></div></td></tr>';
 }
 function addEntry() {
   const prodId=+document.getElementById('entryProduct').value,qty=+document.getElementById('entryQty').value,date=document.getElementById('entryDate').value,note=document.getElementById('entryNote').value.trim();
@@ -669,20 +626,15 @@ function addEntry() {
   document.getElementById('entryQty').value='';document.getElementById('entryNote').value='';toast(`Entree de ${qty} unites enregistree`);renderEntries();
 }
 
-/* ===== Sorties ===== */
+/* Sorties */
 function renderExits() {
   const prods=Store.get('products');
   const sel = document.getElementById('exitProduct');
-  if (prods.length) {
-    sel.innerHTML = prods.map(p=>`<option value="${p.id}">${p.name} (stock: ${p.qty})</option>`).join('');
-    sel.disabled = false;
-  } else {
-    sel.innerHTML = '<option value="">-- Aucun produit --</option>';
-    sel.disabled = true;
-  }
+  if (prods.length) { sel.innerHTML=prods.map(p=>`<option value="${p.id}">${p.name} (stock: ${p.qty})</option>`).join(''); sel.disabled=false; }
+  else { sel.innerHTML='<option value="">-- Aucun produit --</option>'; sel.disabled=true; }
   document.getElementById('exitDate').value=today();
   const exits=Store.get('exits').sort((a,b)=>b.id-a.id).slice(0,50);
-  document.getElementById('exitsBody').innerHTML=exits.length?exits.map(e=>{const p=getProd(e.prodId);return `<tr><td style="color:#8b949e">${e.date}</td><td style="font-weight:500">${p.name}</td><td style="color:#ef4444;font-weight:600">-${e.qty}</td><td style="color:#8b949e">${e.note||'-'}</td></tr>`;}).join(''):'<tr><td colspan="4"><div class="empty-state"><i class="fa-solid fa-arrow-up"></i><p>Aucune sortie enregistree</p><p class="hint">Ajoutez d\'abord des produits, puis enregistrez vos sorties de stock.</p></div></td></tr>';
+  document.getElementById('exitsBody').innerHTML=exits.length?exits.map(e=>{const p=getProd(e.prodId);return `<tr><td style="color:#8b949e">${e.date}</td><td style="font-weight:500">${p.name}</td><td style="color:#ef4444;font-weight:600">-${e.qty}</td><td style="color:#8b949e">${e.note||'-'}</td></tr>`;}).join(''):'<tr><td colspan="4"><div class="empty-state"><i class="fa-solid fa-arrow-up"></i><p>Aucune sortie enregistree</p><p class="hint">Ajoutez d\'abord des produits, puis enregistrez vos sorties.</p></div></td></tr>';
 }
 function addExit() {
   const prodId=+document.getElementById('exitProduct').value,qty=+document.getElementById('exitQty').value,date=document.getElementById('exitDate').value,note=document.getElementById('exitNote').value.trim();
@@ -694,98 +646,60 @@ function addExit() {
   document.getElementById('exitQty').value='';document.getElementById('exitNote').value='';toast(`Sortie de ${qty} unites enregistree`);renderExits();
 }
 
-/* ===== Fournisseurs ===== */
+/* Fournisseurs */
 function renderSuppliers() {
   const sups=Store.get('suppliers');const prods=Store.get('products');
   const q=(document.getElementById('supplierSearch')?.value||'').toLowerCase();
   const filtered=sups.filter(s=>s.name.toLowerCase().includes(q));
-  document.getElementById('suppliersBody').innerHTML=filtered.length?filtered.map(s=>{const nb=prods.filter(p=>p.supId===s.id).length;return `<tr><td style="font-weight:600">${s.name}</td><td style="color:#8b949e">${s.phone}</td><td style="color:#8b949e">${s.email}</td><td><span class="badge" style="background:rgba(240,180,41,.12);color:#f0b429">${nb} produit${nb>1?'s':''}</span></td><td><div style="display:flex;gap:6px"><button class="btn btn-sm btn-secondary btn-icon" onclick="openSupplierModal(${s.id})"><i class="fa-solid fa-pen-to-square"></i></button><button class="btn btn-sm btn-danger btn-icon" onclick="deleteSupplier(${s.id})"><i class="fa-solid fa-trash"></i></button></div></td></tr>`;}).join(''):'<tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-truck-field"></i><p>Aucun fournisseur enregistre</p><p class="hint">Cliquez sur "Ajouter" pour enregistrer votre premier fournisseur.</p></div></td></tr>';
+  document.getElementById('suppliersBody').innerHTML=filtered.length?filtered.map(s=>{const nb=prods.filter(p=>p.supId===s.id).length;return `<tr><td style="font-weight:600">${s.name}</td><td style="color:#8b949e">${s.phone}</td><td style="color:#8b949e">${s.email}</td><td><span class="badge" style="background:rgba(240,180,41,.12);color:#f0b429">${nb} produit${nb>1?'s':''}</span></td><td><div style="display:flex;gap:6px"><button class="btn btn-sm btn-secondary btn-icon" onclick="openSupplierModal(${s.id})"><i class="fa-solid fa-pen-to-square"></i></button><button class="btn btn-sm btn-danger btn-icon" onclick="deleteSupplier(${s.id})"><i class="fa-solid fa-trash"></i></button></div></td></tr>`;}).join(''):'<tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-truck-field"></i><p>Aucun fournisseur</p><p class="hint">Cliquez sur "Ajouter" pour enregistrer votre premier fournisseur.</p></div></td></tr>';
 }
 function openSupplierModal(id) {
   const s=id?getSup(id):{name:'',phone:'',email:''};
-  openModal(id?'Modifier le fournisseur':'Ajouter un fournisseur',`<div style="display:flex;flex-direction:column;gap:14px"><div><label class="form-label">Nom du fournisseur</label><input type="text" class="form-input" id="mSupName" value="${s.name}" placeholder="Ex : Societe XYZ"></div><div><label class="form-label">Telephone</label><input type="text" class="form-input" id="mSupPhone" value="${s.phone}" placeholder="Ex : 0522-123456"></div><div><label class="form-label">Email</label><input type="email" class="form-input" id="mSupEmail" value="${s.email}" placeholder="Ex : contact@xyz.ma"></div></div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="saveSupplier(${id||0})">${id?'Enregistrer':'Ajouter'}</button>`);
-  setTimeout(()=>{const el=document.getElementById('mSupName');if(el)el.focus();},100);
+  openModal(id?'Modifier le fournisseur':'Ajouter un fournisseur',`<div style="display:flex;flex-direction:column;gap:14px"><div><label class="form-label">Nom</label><input type="text" class="form-input" id="mSupName" value="${s.name}"></div><div><label class="form-label">Telephone</label><input type="text" class="form-input" id="mSupPhone" value="${s.phone}"></div><div><label class="form-label">Email</label><input type="email" class="form-input" id="mSupEmail" value="${s.email}"></div></div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="saveSupplier(${id||0})">${id?'Enregistrer':'Ajouter'}</button>`);
 }
 function saveSupplier(id) {
-  const name=document.getElementById('mSupName').value.trim();
-  if(!name){toast('Veuillez saisir un nom','error');return;}
+  const name=document.getElementById('mSupName').value.trim();if(!name){toast('Saisissez un nom','error');return;}
   const data={name,phone:document.getElementById('mSupPhone').value.trim(),email:document.getElementById('mSupEmail').value.trim()};
   const sups=Store.get('suppliers');
   if(id){const idx=sups.findIndex(s=>s.id===id);if(idx>=0)sups[idx]={...sups[idx],...data};toast('Fournisseur modifie');}else{sups.push({id:nextId(sups),...data});toast('Fournisseur ajoute');}
   Store.set('suppliers',sups);closeModal();renderSuppliers();
 }
 function deleteSupplier(id) {
-  const s=getSup(id);
-  const nbProds=Store.get('products').filter(p=>p.supId===id).length;
-  openModal('Confirmer la suppression',`<div style="text-align:center;padding:10px 0"><i class="fa-solid fa-triangle-exclamation" style="font-size:2.5rem;color:#ef4444;margin-bottom:12px"></i><p style="color:#f1f5f9;font-size:1.05rem;font-weight:600;margin-bottom:6px">Supprimer ce fournisseur ?</p><p style="color:#8b949e;font-size:.85rem">${s.name}</p>${nbProds?`<p style="color:#f59e0b;font-size:.8rem;margin-top:8px"><i class="fa-solid fa-triangle-exclamation"></i> ${nbProds} produit(s) associe(s)</p>`:''}</div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-danger" onclick="confirmDeleteSupplier(${id})"><i class="fa-solid fa-trash"></i> Supprimer</button>`);
-}
-function confirmDeleteSupplier(id) {
-  Store.set('suppliers',Store.get('suppliers').filter(s=>s.id!==id));
-  const prods=Store.get('products');
-  prods.forEach(p=>{if(p.supId===id)p.supId=null;});
-  Store.set('products',prods);
-  closeModal();toast('Fournisseur supprime','info');renderSuppliers();
+  openModal('Confirmer','<p style="color:#8b949e">Supprimer ce fournisseur ?</p>',`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-danger" onclick="Store.set('suppliers',Store.get('suppliers').filter(s=>s.id!==${id}));closeModal();toast('Fournisseur supprime','info');renderSuppliers();">Supprimer</button>`);
 }
 
-/* ===== Categories ===== */
+/* Categories */
 function renderCategories() {
-  const cats=Store.get('categories'); const prods=Store.get('products');
-  document.getElementById('categoriesGrid').innerHTML=cats.length?cats.map((c,i)=>{const nb=prods.filter(p=>p.catId===c.id).length;return `<div class="cat-card"><div class="cat-color" style="background:${c.color}22;color:${c.color}"><i class="fa-solid fa-tag"></i></div><h4 style="font-weight:700;font-size:1rem;margin-bottom:4px">${c.name}</h4><p style="color:#8b949e;font-size:.82rem;margin-bottom:12px;line-height:1.4">${c.desc||'Aucune description'}</p><div style="display:flex;align-items:center;justify-content:space-between"><span class="badge" style="background:rgba(240,180,41,.12);color:#f0b429">${nb} produit${nb>1?'s':''}</span><div style="display:flex;gap:6px"><button class="btn btn-sm btn-secondary btn-icon" onclick="openCategoryModal(${c.id})"><i class="fa-solid fa-pen-to-square"></i></button><button class="btn btn-sm btn-danger btn-icon" onclick="deleteCategory(${c.id})"><i class="fa-solid fa-trash"></i></button></div></div></div>`;}).join(''):'<div style="grid-column:1/-1"><div class="empty-state"><i class="fa-solid fa-tags"></i><p>Aucune categorie creee</p><p class="hint">Les categories vous permettent d\'organiser vos produits. Cliquez sur "Ajouter" pour commencer.</p></div></div>';
+  const cats=Store.get('categories');const prods=Store.get('products');
+  document.getElementById('categoriesGrid').innerHTML=cats.length?cats.map(c=>{const nb=prods.filter(p=>p.catId===c.id).length;const totalQty=prods.filter(p=>p.catId===c.id).reduce((s,p)=>s+p.qty,0);return `<div class="stat-card" style="border-left:3px solid ${c.color}"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><h4 style="font-weight:700;font-size:1.05rem">${c.name}</h4><div style="display:flex;gap:6px"><button class="btn btn-sm btn-secondary btn-icon" onclick="openCategoryModal(${c.id})"><i class="fa-solid fa-pen-to-square"></i></button><button class="btn btn-sm btn-danger btn-icon" onclick="deleteCategory(${c.id})"><i class="fa-solid fa-trash"></i></button></div></div><p style="font-size:.82rem;color:#8b949e;margin-bottom:10px">${c.desc}</p><div style="display:flex;gap:16px;font-size:.82rem"><span><strong style="color:#f1f5f9">${nb}</strong> <span style="color:#8b949e">produit${nb>1?'s':''}</span></span><span><strong style="color:#f1f5f9">${fmt(totalQty)}</strong> <span style="color:#8b949e">unites</span></span></div></div>`;}).join(''):'<div class="empty-state" style="grid-column:1/-1"><i class="fa-solid fa-tags"></i><p>Aucune categorie</p><p class="hint">Cliquez sur "Ajouter" pour creer votre premiere categorie.</p></div>';
 }
 function openCategoryModal(id) {
-  const cats=Store.get('categories');
-  const c=id?getCat(id):{name:'',desc:'',color:CAT_COLORS[cats.length%CAT_COLORS.length]};
-  const colorOpts=CAT_COLORS.map(cl=>`<div onclick="document.getElementById('mCatColor').value='${cl}';document.querySelectorAll('.color-opt').forEach(x=>x.classList.remove('ring-2','ring-white'));this.classList.add('ring-2','ring-white')" class="color-opt ${c.color===cl?'ring-2 ring-white':''}" style="width:32px;height:32px;border-radius:8px;background:${cl};cursor:pointer;transition:transform .15s ease;flex-shrink:0"></div>`).join('');
-  openModal(id?'Modifier la categorie':'Ajouter une categorie',`<div style="display:flex;flex-direction:column;gap:14px"><div><label class="form-label">Nom de la categorie</label><input type="text" class="form-input" id="mCatName" value="${c.name}" placeholder="Ex : Alimentation"></div><div><label class="form-label">Description</label><input type="text" class="form-input" id="mCatDesc" value="${c.desc||''}" placeholder="Optionnel"></div><div><label class="form-label">Couleur</label><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">${colorOpts}</div><input type="hidden" id="mCatColor" value="${c.color}"></div></div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="saveCategory(${id||0})">${id?'Enregistrer':'Ajouter'}</button>`);
-  setTimeout(()=>{const el=document.getElementById('mCatName');if(el)el.focus();},100);
+  const c=id?getCat(id):{name:'',desc:'',color:'#f0b429'};
+  openModal(id?'Modifier la categorie':'Ajouter une categorie',`<div style="display:flex;flex-direction:column;gap:14px"><div><label class="form-label">Nom</label><input type="text" class="form-input" id="mCatName" value="${c.name}"></div><div><label class="form-label">Description</label><input type="text" class="form-input" id="mCatDesc" value="${c.desc}"></div><div><label class="form-label">Couleur</label><input type="color" id="mCatColor" value="${c.color}" style="width:60px;height:36px;border:none;background:none;cursor:pointer"></div></div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="saveCategory(${id||0})">${id?'Enregistrer':'Ajouter'}</button>`);
 }
 function saveCategory(id) {
-  const name=document.getElementById('mCatName').value.trim();
-  if(!name){toast('Veuillez saisir un nom','error');return;}
-  const data={name,desc:document.getElementById('mCatDesc').value.trim(),color:document.getElementById('mCatColor').value||CAT_COLORS[0]};
+  const name=document.getElementById('mCatName').value.trim();if(!name){toast('Saisissez un nom','error');return;}
+  const data={name,desc:document.getElementById('mCatDesc').value.trim(),color:document.getElementById('mCatColor').value};
   const cats=Store.get('categories');
   if(id){const idx=cats.findIndex(c=>c.id===id);if(idx>=0)cats[idx]={...cats[idx],...data};toast('Categorie modifiee');}else{cats.push({id:nextId(cats),...data});toast('Categorie ajoutee');}
   Store.set('categories',cats);closeModal();renderCategories();
 }
 function deleteCategory(id) {
-  const c=getCat(id);
-  const nbProds=Store.get('products').filter(p=>p.catId===id).length;
-  openModal('Confirmer la suppression',`<div style="text-align:center;padding:10px 0"><i class="fa-solid fa-triangle-exclamation" style="font-size:2.5rem;color:#ef4444;margin-bottom:12px"></i><p style="color:#f1f5f9;font-size:1.05rem;font-weight:600;margin-bottom:6px">Supprimer cette categorie ?</p><p style="color:#8b949e;font-size:.85rem">${c.name}</p>${nbProds?`<p style="color:#f59e0b;font-size:.8rem;margin-top:8px"><i class="fa-solid fa-triangle-exclamation"></i> ${nbProds} produit(s) associe(s)</p>`:''}</div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-danger" onclick="confirmDeleteCategory(${id})"><i class="fa-solid fa-trash"></i> Supprimer</button>`);
-}
-function confirmDeleteCategory(id) {
-  Store.set('categories',Store.get('categories').filter(c=>c.id!==id));
-  const prods=Store.get('products');
-  prods.forEach(p=>{if(p.catId===id)p.catId=null;});
-  Store.set('products',prods);
-  closeModal();toast('Categorie supprimee','info');renderCategories();
+  const n=Store.get('products').filter(p=>p.catId===id).length;
+  if(n>0){toast(`Impossible : ${n} produit(s) dans cette categorie`,'error');return;}
+  openModal('Confirmer','<p style="color:#8b949e">Supprimer cette categorie ?</p>',`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-danger" onclick="Store.set('categories',Store.get('categories').filter(c=>c.id!==${id}));closeModal();toast('Categorie supprimee','info');renderCategories();">Supprimer</button>`);
 }
 
-/* ===== Inventaire ===== */
-let inventoryFilter = '';
-function filterInventory(f) { inventoryFilter = f; renderInventory(); }
-
+/* Inventaire */
+let invFilter = '';
+function filterInventory(f) { invFilter = f; renderInventory(); }
 function renderInventory() {
-  const prods = Store.get('products').filter(p => !inventoryFilter || stockStatus(p.qty, p.min) === inventoryFilter);
-  document.getElementById('inventoryGrid').innerHTML = prods.length ? prods.map(p => {
-    const cat = getCat(p.catId);
-    const st = stockStatus(p.qty, p.min);
-    const pct = p.min > 0 ? Math.min(100, (p.qty / (p.min * 3)) * 100) : (p.qty > 0 ? 100 : 0);
-    const barColor = st === 'ok' ? '#22c55e' : st === 'low' ? '#f59e0b' : '#ef4444';
-    return `<div class="inv-card">
-      <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:10px">
-        <div><div style="font-weight:600;font-size:.9rem;margin-bottom:2px">${p.name}</div><div style="font-size:.78rem;color:${cat.color}">${cat.name}</div></div>
-        ${statusBadge(st)}
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:6px">
-        <span style="color:#8b949e">Stock : <strong style="color:#f1f5f9">${fmt(p.qty)}</strong></span>
-        <span style="color:#8b949e">Min : ${p.min}</span>
-      </div>
-      <div class="stock-bar"><div class="stock-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
-    </div>`;
-  }).join('') : '<div style="grid-column:1/-1"><div class="empty-state"><i class="fa-solid fa-clipboard-list"></i><p>' + (inventoryFilter ? 'Aucun produit avec ce statut' : 'Aucun produit en inventaire') + '</p><p class="hint">Ajoutez des produits pour voir leur etat de stock ici.</p></div></div>';
+  const prods=Store.get('products');
+  const filtered=invFilter?prods.filter(p=>stockStatus(p.qty)===invFilter):prods;
+  document.getElementById('inventoryGrid').innerHTML=filtered.length?filtered.map(p=>{const st=stockStatus(p.qty);const cat=getCat(p.catId);return `<div class="stat-card"><div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:12px"><div><div style="font-weight:700;font-size:.95rem;margin-bottom:2px">${p.name}</div><div style="font-size:.78rem;color:${cat.color}">${cat.name}</div></div>${statusBadge(st)}</div><div style="font-size:1.5rem;font-weight:700">${fmt(p.qty)} <span style="font-size:.78rem;color:#8b949e;font-weight:400">unites</span></div></div>`;}).join(''):'<div class="empty-state" style="grid-column:1/-1"><i class="fa-solid fa-clipboard-list"></i><p>Aucun produit dans cette categorie</p></div>';
 }
 
-/* ===== Initialisation ===== */
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 navigate('dashboard');
 </script>
 </body>
